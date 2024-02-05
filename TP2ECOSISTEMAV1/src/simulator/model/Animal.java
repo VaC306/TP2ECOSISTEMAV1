@@ -16,6 +16,9 @@ public abstract class Animal implements Animalnfo, Entity{
 	protected Vector2D _dest;
 	protected double _age;
 	protected double _desire;
+	protected Animal _mate_target;
+	protected Animal _baby;
+	protected AnimalMapView _region_mngr;
 	
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed, SelectionStrategy mate_strategy, Vector2D pos)
 	{
@@ -40,6 +43,9 @@ public abstract class Animal implements Animalnfo, Entity{
 		this._energy = 100.0;
 		this._age = 0.0;
 		this._desire = 0.0;
+		this._mate_target = null;
+		this._baby = null;
+		this._region_mngr = null;
 		double x = Utils._rand.nextDouble(800);
 		double y = Utils._rand.nextDouble(600);
 		this._dest = new Vector2D(x, y);
