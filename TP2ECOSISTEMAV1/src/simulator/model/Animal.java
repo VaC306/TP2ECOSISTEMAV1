@@ -105,6 +105,6 @@ public abstract class Animal implements Animalnfo, Entity{
 	
 	public boolean is_pregnent()
 	{
-		return false; //ver que poner
+		return _baby == null;
 	}
 }

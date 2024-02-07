@@ -1,4 +1,4 @@
-package control;
+package simulator.control;
 
 public class Controller {
 	

@@ -88,7 +88,8 @@ public class RegionManager implements AnimalMapView{
 
 	@Override
 	public double get_food(Animal a, double dt) {
-		// TODO Auto-generated method stub
+		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		_region.get_food(a, dt);
 		return 0;
 	}
 }
