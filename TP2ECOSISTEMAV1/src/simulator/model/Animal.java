@@ -22,13 +22,13 @@ public abstract class Animal implements Animalnfo, Entity{
 	
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed, SelectionStrategy mate_strategy, Vector2D pos)
 	{
-		if (genetic_code == null)
+		if (genetic_code.equals(null))
 			throw new IllegalArgumentException("genetic_code no puede estar vacío");
 		if(sight_range < 0)
 			throw new IllegalArgumentException("sight_range tiene que ser positivo");
 		if(init_speed < 0)
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
-		if(mate_strategy == null)
+		if(mate_strategy.equals(null))
 			//throw new IllegalArgumentException("mate_strategy no puede estar vacío");
 		//if(pos == null)
 			//ver que

@@ -1,5 +1,7 @@
 package simulator.model;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -14,6 +16,7 @@ public class Simulator implements JSONable{
 	protected int _height;
 	protected double _time;
 	protected RegionManager _regmanager;
+	protected List<Animal> l;
 	
 	
 	
@@ -21,6 +24,7 @@ public class Simulator implements JSONable{
 	{
 		
 		_regmanager = new RegionManager(cols, rows, width, height);
+		l = new LinkedList<>();
 		this._cols = cols;
 		this._rows = rows;
 		this._width = width;
@@ -36,6 +40,7 @@ public class Simulator implements JSONable{
 	private void add_animal(Animal a)
 	{
 		_regmanager.register_animal(a);
+		l.add(a);
 	}
 	
 	public MapInfo get_map_info()
@@ -45,12 +50,23 @@ public class Simulator implements JSONable{
 	
 	public List<? extends Animalnfo> get_animals()
 	{
-		return null;
+		return Collections.unmodifiableList(l);
 	}
 	
 	public void advance(double dt)
 	{
 		this._time = _time + dt;
+		
+		for(Animal a: l)
+		{
+			//quitar los animales muertos
+			a.update(dt); //actualizar cada animal
+			_regmanager.update_animal_region(a);
+		}
+		
+		_regmanager.update_all_regions(dt);
+		
+		
 	}
 	
 }

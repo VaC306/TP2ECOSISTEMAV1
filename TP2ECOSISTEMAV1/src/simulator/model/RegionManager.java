@@ -30,6 +30,16 @@ public class RegionManager implements AnimalMapView{
 		
 	}
 	
+	void update_animal_region(Animal a)
+	{
+		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		
+		if(!_region.equals(_animal_region.equals(a)))
+		{
+			
+		}
+	}
+	
 	void register_animal(Animal a)
 	{
 		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
@@ -42,6 +52,17 @@ public class RegionManager implements AnimalMapView{
 		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
 		_region.remove_animal(a);
 		_animal_region.remove(a, _region);
+	}
+	
+	void update_all_regions(double dt)
+	{
+		for(int i = 0; i < _cols; ++i)
+		{
+			for(int j = 0; j < _height; ++j)
+			{
+				_regions[i][j].update(dt);
+			}
+		}
 	}
 	
 	public List<Animal> get_animals_in_range(Animal a, Predicate<Animal> filter)
