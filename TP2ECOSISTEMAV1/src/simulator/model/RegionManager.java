@@ -34,9 +34,9 @@ public class RegionManager implements AnimalMapView{
 	{
 		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
 		
-		if(!_region.equals(_animal_region.equals(a)))
+		if(!_region.equals(_animal_region.equals(a))) //revisar esta condicion no creo que este bien
 		{
-			
+			//no se que hacer aqui
 		}
 	}
 	
