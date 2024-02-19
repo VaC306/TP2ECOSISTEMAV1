@@ -28,7 +28,7 @@ public abstract class Animal implements Animalnfo, Entity{
 			throw new IllegalArgumentException("sight_range tiene que ser positivo");
 		if(init_speed < 0)
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
-		if(mate_strategy.equals(null))
+		//if(mate_strategy.equals(null))
 			//throw new IllegalArgumentException("mate_strategy no puede estar vacío");
 		//if(pos == null)
 			//ver que

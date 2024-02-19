@@ -22,6 +22,7 @@ import simulator.misc.Vector2D;
 import simulator.model.Animal;
 import simulator.model.Animalnfo;
 import simulator.model.Sheep;
+import simulator.model.Simulator;
 import simulator.model.Wolf;
 import simulator.view.SimpleObjectViewer;
 import simulator.view.SimpleObjectViewer.ObjInfo;
@@ -142,7 +143,14 @@ public class Main {
 	}
 
 	private static void start_batch_mode() throws Exception {
+		
+		
+		
+		
 		InputStream is = new FileInputStream(new File(_in_file));
+		
+		
+		
 	}
 
 	private static void start_GUI_mode() throws Exception {
