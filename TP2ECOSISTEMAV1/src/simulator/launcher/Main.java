@@ -2,7 +2,9 @@ package simulator.launcher;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,10 +19,16 @@ import org.apache.commons.cli.ParseException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import simulator.factories.Builder;
+import simulator.factories.BuilderBasedFactory;
+import simulator.factories.Factory;
+import simulator.factories.SelectClosestBuilder;
+import simulator.factories.SelectFirstBuilder;
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 import simulator.model.Animal;
 import simulator.model.Animalnfo;
+import simulator.model.SelectionStrategy;
 import simulator.model.Sheep;
 import simulator.model.Simulator;
 import simulator.model.Wolf;
@@ -52,11 +60,15 @@ public class Main {
 	// default values for some parameters
 	//
 	private final static Double _default_time = 10.0; // in seconds
+	private final static Double _dtimeDefaultValue = 0.03; //in seconds
+	
 
 	// some attributes to stores values corresponding to command-line parameters
 	//
 	private static Double _time = null;
 	private static String _in_file = null;
+	private static String _outFile = null;
+	private static Double _dtime = null;
 	private static ExecMode _mode = ExecMode.BATCH;
 
 	private static void parse_args(String[] args) {
@@ -72,7 +84,9 @@ public class Main {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parse_help_option(line, cmdLineOptions);
 			parse_in_file_option(line);
+			parse_out_file_option(line);
 			parse_time_option(line);
+			parse_delta_time_option(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -100,7 +114,14 @@ public class Main {
 
 		// input file
 		cmdLineOptions.addOption(Option.builder("i").longOpt("input").hasArg().desc("A configuration file.").build());
-
+		
+		//output
+		cmdLineOptions.addOption(Option.builder("o").longOpt("output").hasArg().desc("Output file, where output is written.").build());
+		
+		// delta-time
+		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
+	.desc("A double representing actual time, in seconds, per simulation step. Default value: "+ _dtimeDefaultValue + ".").build());
+		
 		// steps
 		cmdLineOptions.addOption(Option.builder("t").longOpt("time").hasArg()
 				.desc("An real number representing the total simulation time in seconds. Default value: "
@@ -124,6 +145,10 @@ public class Main {
 			throw new ParseException("In batch mode an input configuration file is required");
 		}
 	}
+	
+	private static void parse_out_file_option(CommandLine line) throws ParseException {
+		_outFile = line.getOptionValue("o", null);
+	}
 
 	private static void parse_time_option(CommandLine line) throws ParseException {
 		String t = line.getOptionValue("t", _default_time.toString());
@@ -134,8 +159,19 @@ public class Main {
 			throw new ParseException("Invalid value for time: " + t);
 		}
 	}
-
+	
+	private static void parse_delta_time_option(CommandLine line) throws ParseException {
+		String dt = line.getOptionValue("dt", _dtimeDefaultValue.toString());
+		try {
+			_dtime = Double.parseDouble(dt);
+			assert (_dtime > 0);
+		} catch (Exception e) {
+			throw new ParseException("Invalid delta-time value: " + dt);
+		}
+	}
+	
 	private static void init_factories() {
+		
 	}
 
 	private static JSONObject load_JSON_file(InputStream in) {
@@ -149,8 +185,14 @@ public class Main {
 		
 		InputStream is = new FileInputStream(new File(_in_file));
 		
-		
-		
+		OutputStream out = null;
+		if(_outFile!=null) {
+			out = new FileOutputStream (_outFile);
+		}
+		else {
+			out=System.out;
+		}
+		out.close();
 	}
 
 	private static void start_GUI_mode() throws Exception {
@@ -219,8 +261,8 @@ public class Main {
 	public static void main(String[] args) {
 		Utils._rand.setSeed(2147483647l);
 		try {
-			//start(args);
-			simulation();
+			start(args);
+			//simulation();
 		} catch (Exception e) {
 			System.err.println("Something went wrong ...");
 			System.err.println();
