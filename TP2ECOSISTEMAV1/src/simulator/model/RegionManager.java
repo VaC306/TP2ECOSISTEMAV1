@@ -30,6 +30,12 @@ public class RegionManager implements AnimalMapView{
 		
 	}
 	
+	void set_region(int row, int col, Region r)
+	{
+		//actualizar lista de animales de la region
+		this._regions[row][col] = (DefaultRegion) r;
+	}
+	
 	void update_animal_region(Animal a)
 	{
 		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];

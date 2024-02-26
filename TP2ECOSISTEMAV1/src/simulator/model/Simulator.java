@@ -43,6 +43,11 @@ public class Simulator implements JSONable{
 		l.add(a);
 	}
 	
+	private void set_region(int row, int col, Region r)
+	{
+		_regmanager.set_region(row, col, r);
+	}
+	
 	public MapInfo get_map_info()
 	{
 		return _regmanager;

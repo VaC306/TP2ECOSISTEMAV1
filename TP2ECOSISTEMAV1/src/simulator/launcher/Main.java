@@ -19,15 +19,21 @@ import org.apache.commons.cli.ParseException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import simulator.control.Controller;
 import simulator.factories.Builder;
 import simulator.factories.BuilderBasedFactory;
+import simulator.factories.DefaultRegionBuilder;
+import simulator.factories.DynamicSupplyRegionBuilder;
 import simulator.factories.Factory;
 import simulator.factories.SelectClosestBuilder;
 import simulator.factories.SelectFirstBuilder;
+import simulator.factories.SheepBuilder;
+import simulator.factories.WolfBuilder;
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 import simulator.model.Animal;
 import simulator.model.Animalnfo;
+import simulator.model.Region;
 import simulator.model.SelectionStrategy;
 import simulator.model.Sheep;
 import simulator.model.Simulator;
@@ -69,8 +75,14 @@ public class Main {
 	private static String _in_file = null;
 	private static String _outFile = null;
 	private static Double _dtime = null;
+	private static Boolean _sv = null;
 	private static ExecMode _mode = ExecMode.BATCH;
-
+	
+	//factories
+	private static Factory<Animal> _animal_factory;
+	private static Factory<Region> _region_factory;
+	
+	
 	private static void parse_args(String[] args) {
 
 		// define the valid command line options
@@ -87,7 +99,8 @@ public class Main {
 			parse_out_file_option(line);
 			parse_time_option(line);
 			parse_delta_time_option(line);
-
+			parse_simple_viewer_option(line);
+			
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
 			//
@@ -121,6 +134,9 @@ public class Main {
 		// delta-time
 		cmdLineOptions.addOption(Option.builder("dt").longOpt("delta-time").hasArg()
 	.desc("A double representing actual time, in seconds, per simulation step. Default value: "+ _dtimeDefaultValue + ".").build());
+		
+		// simple viewer
+		cmdLineOptions.addOption(Option.builder("sv").longOpt("simple viewer").desc("Show the viewer window in console mode.").build());
 		
 		// steps
 		cmdLineOptions.addOption(Option.builder("t").longOpt("time").hasArg()
@@ -170,7 +186,29 @@ public class Main {
 		}
 	}
 	
+	private static void parse_simple_viewer_option(CommandLine line) throws ParseException {
+		_sv = line.hasOption("sv");
+	}
+	
 	private static void init_factories() {
+		
+		//inicializar la factoria de estrategias
+		List<Builder<SelectionStrategy>> selection_strategy_builders = new ArrayList<>();
+		selection_strategy_builders.add(new SelectFirstBuilder());
+		selection_strategy_builders.add(new SelectClosestBuilder());
+		Factory<SelectionStrategy> selection_strategy_factory = new BuilderBasedFactory<SelectionStrategy>(selection_strategy_builders);
+		
+		//inicializar la factoria de animales
+		List<Builder<Animal>> animal_builders = new ArrayList<>();
+		animal_builders.add(new WolfBuilder(selection_strategy_factory));
+		animal_builders.add(new SheepBuilder(selection_strategy_factory));
+		_animal_factory = new BuilderBasedFactory<Animal>(animal_builders);
+		
+		//inicializar la factoria de regiones
+		List<Builder<Region>> region_builders = new ArrayList<>();
+		region_builders.add(new DefaultRegionBuilder());
+		region_builders.add(new DynamicSupplyRegionBuilder());
+		_region_factory = new BuilderBasedFactory<Region>(region_builders);		
 		
 	}
 
@@ -180,10 +218,8 @@ public class Main {
 
 	private static void start_batch_mode() throws Exception {
 		
-		
-		
-		
-		InputStream is = new FileInputStream(new File(_in_file));
+		InputStream in = new FileInputStream(new File(_in_file));
+		JSONObject jsonInput = load_JSON_file(in);
 		
 		OutputStream out = null;
 		if(_outFile!=null) {
@@ -192,6 +228,18 @@ public class Main {
 		else {
 			out=System.out;
 		}
+		
+		int _cols = jsonInput.getInt("cols");
+		int _rows = jsonInput.getInt("rows");
+		int _width = jsonInput.getInt("width");
+		int _height = jsonInput.getInt("height");
+		
+		Simulator _sim = new Simulator(_cols, _rows, _width, _height, _animal_factory, _region_factory);
+		Controller _ctrl = new Controller(_sim);
+		
+		_ctrl.load_data(jsonInput);
+		_ctrl.run(_time, _dtime, _sv, out);
+		
 		out.close();
 	}
 

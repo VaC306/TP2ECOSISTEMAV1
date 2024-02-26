@@ -8,7 +8,7 @@ public class SelectYoungestBuilder extends Builder<Animal>{
 	
 	public SelectYoungestBuilder()
 	{
-		super("youngest", "");
+		super("youngest", "a");
 	}
 	
 	public SelectYoungestBuilder(String type_tag, String desc) {

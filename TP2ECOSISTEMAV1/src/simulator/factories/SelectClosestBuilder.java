@@ -3,12 +3,13 @@ package simulator.factories;
 import org.json.JSONObject;
 
 import simulator.model.Animal;
+import simulator.model.SelectionStrategy;
 
-public class SelectClosestBuilder extends Builder<Animal>{
+public class SelectClosestBuilder extends Builder<SelectionStrategy>{
 	
 	public SelectClosestBuilder()
 	{
-		super("closest", "");
+		super("closest", "a");
 	}
 	
 	public SelectClosestBuilder(String type_tag, String desc) {
@@ -16,7 +17,7 @@ public class SelectClosestBuilder extends Builder<Animal>{
 	}
 
 	@Override
-	protected Animal create_instance(JSONObject data) {
+	protected SelectionStrategy create_instance(JSONObject data) {
 		return null;
 	}
 
