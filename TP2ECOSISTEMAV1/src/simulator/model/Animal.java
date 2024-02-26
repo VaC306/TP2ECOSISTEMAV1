@@ -23,13 +23,13 @@ public abstract class Animal implements Animalnfo, Entity{
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed, SelectionStrategy mate_strategy, Vector2D pos)
 	{
 		if (genetic_code.equals(null))
-			throw new IllegalArgumentException("genetic_code no puede estar vacío");
+			throw new IllegalArgumentException("genetic_code no puede estar vacï¿½o");
 		if(sight_range < 0)
 			throw new IllegalArgumentException("sight_range tiene que ser positivo");
 		if(init_speed < 0)
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
 		//if(mate_strategy.equals(null))
-			//throw new IllegalArgumentException("mate_strategy no puede estar vacío");
+			//throw new IllegalArgumentException("mate_strategy no puede estar vacï¿½o");
 		//if(pos == null)
 			//ver que
 		
@@ -50,6 +50,32 @@ public abstract class Animal implements Animalnfo, Entity{
 		double y = Utils._rand.nextDouble(600);
 		this._dest = new Vector2D(x, y);
 
+	}
+	
+	protected Animal(Animal p1, Animal p2){
+		this._age=0.0;
+		
+		this._baby=null;
+		this._dest=null;
+		this._mate_strategy=null;
+		this._region_mngr=null;
+		
+		this._state = State.NORMAL;
+		this._desire=0.0;
+		
+		this._genetic_code = p1.get_genetic_code();
+		this._diet=p1.get_diet();
+		
+		this._mate_strategy=p2.getMate_strategy();
+		
+		this._energy = (p1.get_energy()+p2.get_energy())/2;
+		
+		this._pos = p1.get_position().plus(Vector2D.get_random_vector(-1,1).scale(60.0*(Utils._rand
+				.nextGaussian()+1)));
+		
+		this._sight_range = Utils.get_randomized_parameter((p1.get_sight_range()+p2.get_sight_range())/2, 0.2);
+		
+		this._speed = Utils.get_randomized_parameter((p1.get_speed()+p2.get_speed())/2, 0.2);
 	}
 	
 	protected void move(double speed)
@@ -96,6 +122,10 @@ public abstract class Animal implements Animalnfo, Entity{
 	public double get_age()
 	{
 		return _age;
+	}
+	
+	public SelectionStrategy getMate_strategy() {
+		return _mate_strategy;
 	}
 	
 	public Vector2D get_destination()
