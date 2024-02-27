@@ -22,9 +22,14 @@ public class SheepBuilder extends Builder<Animal>{
 
 	@Override
 	protected Animal create_instance(JSONObject data) {
+		//valid data
+		if(data == null)
+			throw new IllegalArgumentException();
+				
+		if(data.has()))
+			
 		
 		
-		//return new Sheep();
 		return null;
 	}
 

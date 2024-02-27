@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.json.JSONObject;
+
 public class RegionManager implements AnimalMapView{
 	
 	protected int _cols;
@@ -118,5 +120,11 @@ public class RegionManager implements AnimalMapView{
 		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
 		_region.get_food(a, dt);
 		return 0;
+	}
+	
+	public JSONObject as_JSON()
+	{
+		JSONObject data = new JSONObject();
+		return null;
 	}
 }

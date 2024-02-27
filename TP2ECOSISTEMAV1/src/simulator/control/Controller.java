@@ -84,9 +84,9 @@ public class Controller {
 					_sim.get_map_info().get_cols(), _sim.get_map_info().get_rows());
 			
 			while (_time<t) {
-			_time += dt;
-			for( Animalnfo a : _sim.get_animals() ) ((Entity) a).update(dt); //revisar esto no creo que bien
-			view.update(to_animals_info(_sim.get_animals()), _time, dt);
+				_time += dt;
+				for( Animalnfo a : _sim.get_animals() ) ((Entity) a).update(dt); //revisar esto no creo que bien
+					view.update(to_animals_info(_sim.get_animals()), _time, dt);
 			}
 		}
 	}

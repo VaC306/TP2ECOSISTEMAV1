@@ -1,5 +1,8 @@
 package simulator.model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 
@@ -28,10 +31,10 @@ public abstract class Animal implements Animalnfo, Entity{
 			throw new IllegalArgumentException("sight_range tiene que ser positivo");
 		if(init_speed < 0)
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
-		//if(mate_strategy.equals(null))
-			//throw new IllegalArgumentException("mate_strategy no puede estar vac�o");
+		if(mate_strategy.equals(null))
+			throw new IllegalArgumentException("mate_strategy no puede estar vacio");
 		//if(pos == null)
-			//ver que
+			//funcion init
 		
 		this._genetic_code = genetic_code;
 		this._diet = diet;
@@ -136,5 +139,23 @@ public abstract class Animal implements Animalnfo, Entity{
 	public boolean is_pregnent()
 	{
 		return _baby == null;
+	}
+	
+	public JSONObject as_JSON()
+	{
+		JSONObject data = new JSONObject();
+		
+		JSONArray JSONpos = new JSONArray();
+		
+		JSONpos.put(get_position().getX());
+		JSONpos.put(get_position().getY());
+		data.put("pos", JSONpos);
+		
+		data.put("gcode", this.get_genetic_code());
+		data.put("diet", this.get_diet());
+		data.put("state", this.get_state());
+	
+		return data;
+		
 	}
 }

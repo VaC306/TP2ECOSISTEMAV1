@@ -18,7 +18,7 @@ public class DefaultRegionBuilder extends Builder<Region>{
 
 	@Override
 	protected Region create_instance(JSONObject data) {
-		return null;
+		return new DefaultRegion();
 	}
-
+	
 }
