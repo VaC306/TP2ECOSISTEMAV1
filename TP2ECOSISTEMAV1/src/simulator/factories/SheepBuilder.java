@@ -29,16 +29,17 @@ public class SheepBuilder extends Builder<Animal>{
 		if(data == null)
 			throw new IllegalArgumentException();
 			
-		SelectionStrategy _select_strat;
+		SelectionStrategy _mate_strategy = null;
+		SelectionStrategy _danger_strategy = null;
 		
 		if(!data.has("mate_strategy"))
 		{
-			_select_strat = _selection_strategy_factory.create_instance(data); //ver como selectfirst
+			_mate_strategy = _selection_strategy_factory.create_instance(data); //ver como selectfirst
 		}
 		
 		if(!data.has("danger_strategy"))
 		{
-			_select_strat = _selection_strategy_factory.create_instance(data); //ver como selectfirst
+			_danger_strategy = _selection_strategy_factory.create_instance(data); //ver como selectfirst
 		}
 		
 		Vector2D _pos = new Vector2D();
@@ -61,7 +62,7 @@ public class SheepBuilder extends Builder<Animal>{
 			assert(_pos.getY() >= _y_range.getDouble(0) && _pos.getY() <= _y_range.getDouble(1));
 		}
 		
-		return null;
+		return new Sheep(_mate_strategy, _danger_strategy, _pos);
 	}
 
 }
