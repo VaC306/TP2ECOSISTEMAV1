@@ -25,9 +25,19 @@ public class RegionManager implements AnimalMapView{
 		this._rows = rows;
 		this._width = width;
 		this._height = height;
-		this._region_height = height / rows;
-		this._region_width = width / cols;
+		
+		if ( _width % _cols != 0 || _height % _rows != 0) 
+			throw new IllegalArgumentException("la anchura y el grosor no son divisibles por las columnas y filas");
+		
+		_region_width = _width / _cols;
+		_region_height = _height / _rows;
+		
 		this._regions = new DefaultRegion[rows][cols];
+		
+		for(int i = 0; i < rows; i++)
+			for(int j = 0; j < cols; j++)
+				this._regions[i][j] = new DefaultRegion();
+		
 		this._animal_region = new HashMap <Animal, Region>();
 		
 	}
@@ -40,7 +50,7 @@ public class RegionManager implements AnimalMapView{
 	
 	void update_animal_region(Animal a)
 	{
-		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		
 		if(!_region.equals(_animal_region.equals(a))) //revisar esta condicion no creo que este bien
 		{
@@ -50,7 +60,9 @@ public class RegionManager implements AnimalMapView{
 	
 	void register_animal(Animal a)
 	{
-		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		a.init(this);
+		
+		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		_region.add_animal(a);
 		_animal_region.put(a, _region);
 	}

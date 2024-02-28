@@ -12,20 +12,19 @@ public class Sheep extends Animal{
 	protected Animal _danger_source;
 	protected SelectionStrategy _danger_strategy_;
 	
-	protected Sheep(Sheep p1, Animal p2) {
-		super(p1, p2);
-		this._danger_source= null;
-		this._danger_strategy_ = p1._danger_strategy_;
-		
-	}
-	
 	
 	public Sheep(SelectionStrategy mate_strategy, SelectionStrategy danger_strategy, Vector2D pos)
 	{
 		super("SHEEP", Diet.HERBIVORE, 40.0, 35.0, mate_strategy, pos);
 		this._pos = pos;
-		
 		this._danger_strategy_= danger_strategy;
+	}
+	
+	protected Sheep(Sheep p1, Animal p2) {
+		super(p1, p2);
+		this._danger_source= null;
+		this._danger_strategy_ = p1._danger_strategy_;
+		
 	}
 	
 	@Override

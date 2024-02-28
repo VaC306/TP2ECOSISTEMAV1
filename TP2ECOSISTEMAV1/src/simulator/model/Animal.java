@@ -25,7 +25,7 @@ public abstract class Animal implements Animalnfo, Entity{
 	
 	protected Animal(String genetic_code, Diet diet, double sight_range, double init_speed, SelectionStrategy mate_strategy, Vector2D pos)
 	{
-		if (genetic_code.equals(null))
+		if(genetic_code.equals(null))
 			throw new IllegalArgumentException("genetic_code no puede estar vac�o");
 		if(sight_range < 0)
 			throw new IllegalArgumentException("sight_range tiene que ser positivo");
@@ -33,8 +33,6 @@ public abstract class Animal implements Animalnfo, Entity{
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
 		if(mate_strategy.equals(null))
 			throw new IllegalArgumentException("mate_strategy no puede estar vacio");
-		if(pos == null)
-			init(_region_mngr);
 		
 		this._genetic_code = genetic_code;
 		this._diet = diet;
@@ -90,8 +88,8 @@ public abstract class Animal implements Animalnfo, Entity{
 		
 		if(_pos == null)
 		{
-			double x = Utils._rand.nextDouble(_region_mngr.get_width() - 1);
-			double y = Utils._rand.nextDouble(_region_mngr.get_height() - 1);
+			double x = Utils._rand.nextDouble(width - 1);
+			double y = Utils._rand.nextDouble(height - 1);
 			_pos = new Vector2D(x, y);
 			
 		}
