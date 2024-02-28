@@ -235,7 +235,7 @@ public class Main {
 		int _height = jsonInput.getInt("height");
 		
 		Simulator _sim = new Simulator(_cols, _rows, _width, _height, _animal_factory, _region_factory);
-		Controller _ctrl = new Controller(_sim);
+		Controller _ctrl = new Controller(_sim, _animal_factory, _region_factory);
 		
 		_ctrl.load_data(jsonInput);
 		_ctrl.run(_time, _dtime, _sv, out);

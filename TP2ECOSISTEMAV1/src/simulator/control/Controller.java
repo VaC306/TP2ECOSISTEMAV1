@@ -33,9 +33,11 @@ public class Controller {
 	private static Factory<Animal> _animal_factory;
 	private static Factory<Region> _region_factory;
 	
-	public Controller(Simulator sim)
+	public Controller(Simulator sim, Factory<Animal> animal_factory, Factory<Region> region_factory) //ver si se puede pasar por parametro las factorias
 	{
 		_sim = sim;
+		_animal_factory = animal_factory;
+		_region_factory = region_factory;
 	}
 	
 	private static List<ObjInfo> to_animals_info(List<? extends Animalnfo> animals) {
@@ -69,8 +71,7 @@ public class Controller {
 				for (int R = rf; R <= rt; R++) {
 	                for (int C = cf; C <= ct; C++) {
 	         
-	                    Region newRegion = _region_factory.create_instance(spec);// Crea la región usando Factory<Region> y spec
-	                    _sim.set_region(R, C, newRegion);
+	                    _sim.set_region(R, C, spec);
 	                }
 	            }	
 			}
@@ -88,9 +89,7 @@ public class Controller {
 			for(int j = 0; j < cantidad; ++j)
 			{
 				JSONObject spec = _animal.getJSONObject("spec");
-				
-				Animal newAnimal = _animal_factory.create_instance(spec);
-				_sim.add_animal(newAnimal);
+				_sim.add_animal(spec);
 			}
 			
 		}

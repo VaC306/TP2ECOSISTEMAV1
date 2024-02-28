@@ -17,7 +17,8 @@ public class Simulator implements JSONable{
 	protected double _time;
 	protected RegionManager _regmanager;
 	protected List<Animal> l;
-	
+	protected Factory<Animal> _animals_factory;
+	protected Factory<Region> _regions_factory;
 	
 	
 	public Simulator(int cols, int rows, int width, int height, Factory<Animal> animals_factory, Factory<Region> regions_factory)
@@ -30,6 +31,8 @@ public class Simulator implements JSONable{
 		this._width = width;
 		this._height = height;
 		this._time = 0.0;
+		this._animals_factory = animals_factory;
+		this._regions_factory = regions_factory;
 	}
 	
 	public double get_time()
@@ -37,15 +40,27 @@ public class Simulator implements JSONable{
 		return this._time;
 	}
 	
-	public void add_animal(Animal a)
+	private void add_animal(Animal a)
 	{
 		_regmanager.register_animal(a);
 		l.add(a);
 	}
 	
-	public void set_region(int row, int col, Region r)
+	public void add_animal(JSONObject a_json)
+	{
+		Animal nuevo_animal = _animals_factory.create_instance(a_json);
+		add_animal(nuevo_animal);
+	}
+	
+	private void set_region(int row, int col, Region r)
 	{
 		_regmanager.set_region(row, col, r);
+	}
+	
+	public void set_region(int row, int col, JSONObject r_json)
+	{
+		Region nueva_region = _regions_factory.create_instance(r_json);
+		set_region(row, col, nueva_region);
 	}
 	
 	public MapInfo get_map_info()
