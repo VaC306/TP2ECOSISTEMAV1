@@ -33,8 +33,8 @@ public abstract class Animal implements Animalnfo, Entity{
 			throw new IllegalArgumentException("init_speed tiene que ser positivo");
 		if(mate_strategy.equals(null))
 			throw new IllegalArgumentException("mate_strategy no puede estar vacio");
-		//if(pos == null)
-			//funcion init
+		if(pos == null)
+			init(_region_mngr);
 		
 		this._genetic_code = genetic_code;
 		this._diet = diet;
@@ -49,9 +49,7 @@ public abstract class Animal implements Animalnfo, Entity{
 		this._mate_target = null;
 		this._baby = null;
 		this._region_mngr = null;
-		double x = Utils._rand.nextDouble(800);
-		double y = Utils._rand.nextDouble(600);
-		this._dest = new Vector2D(x, y);
+		this._dest = null;
 
 	}
 	
@@ -79,6 +77,40 @@ public abstract class Animal implements Animalnfo, Entity{
 		this._sight_range = Utils.get_randomized_parameter((p1.get_sight_range()+p2.get_sight_range())/2, 0.2);
 		
 		this._speed = Utils.get_randomized_parameter((p1.get_speed()+p2.get_speed())/2, 0.2);
+	}
+	
+	protected void init(AnimalMapView reg_mngr)
+	{
+		//inicializar el region manager
+		_region_mngr = reg_mngr;
+		
+		double width = _region_mngr.get_width();
+		double height = _region_mngr.get_height();
+		
+		
+		if(_pos == null)
+		{
+			double x = Utils._rand.nextDouble(_region_mngr.get_width() - 1);
+			double y = Utils._rand.nextDouble(_region_mngr.get_height() - 1);
+			_pos = new Vector2D(x, y);
+			
+		}
+		else
+		{
+			double x = _pos.getX();
+			double y = _pos.getY();
+			
+			while (x >= width) x = (x - width);
+			while (x < 0) x = (x + width);
+			while (y >= height) y = (y - height);
+			while (y < 0) y = (y + height);
+
+		}
+		
+		//posicion dentro del mapa de destino
+		double a = Utils._rand.nextDouble(800);
+		double b = Utils._rand.nextDouble(600);
+		_dest = new Vector2D(a, b);
 	}
 	
 	protected void move(double speed)
