@@ -6,11 +6,14 @@ public class SelectYoungest implements SelectionStrategy{
 
 	@Override
 	public Animal select(Animal a, List<Animal> as) {
-		int youngestAge = Integer.MAX_VALUE;
+		double youngestAge = Double.MAX_VALUE;
+		
+		if(as == null)
+			return null;
 		
 		for (Animal animal : as) {
             if (animal.get_age() < youngestAge) {
-                youngestAge = (int) animal.get_age();
+                youngestAge = animal.get_age();
                 a = animal;
             }
         }

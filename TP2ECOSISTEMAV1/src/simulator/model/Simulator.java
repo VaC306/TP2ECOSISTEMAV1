@@ -37,13 +37,13 @@ public class Simulator implements JSONable{
 		return this._time;
 	}
 	
-	private void add_animal(Animal a)
+	public void add_animal(Animal a)
 	{
 		_regmanager.register_animal(a);
 		l.add(a);
 	}
 	
-	private void set_region(int row, int col, Region r)
+	public void set_region(int row, int col, Region r)
 	{
 		_regmanager.set_region(row, col, r);
 	}
@@ -72,6 +72,16 @@ public class Simulator implements JSONable{
 		_regmanager.update_all_regions(dt);
 		
 		
+	}
+	
+	public JSONObject as_JSON()
+	{
+		JSONObject _obj = null;
+		
+		_obj.put("time", _time);
+		_obj.put("state", _regmanager.as_JSON());
+		
+		return _obj;
 	}
 	
 }

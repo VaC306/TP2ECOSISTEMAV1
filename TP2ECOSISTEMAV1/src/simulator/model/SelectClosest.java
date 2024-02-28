@@ -6,12 +6,18 @@ public class SelectClosest implements SelectionStrategy{
 
 	@Override
 	public Animal select(Animal a, List<Animal> as) {
-		int ind = 0;
+		Animal _animal_cercano = null;
+		double _minima_distancia = Double.MAX_VALUE;
+		
+		if(as == null)
+			return null;
+		
 		for(Animal b: as)
 		{
-			//if(b.get_position())
+			if(a.get_position().distanceTo(b.get_position()) < _minima_distancia)
+				_animal_cercano = b;
 		}
-		return as.get(ind);
+		return _animal_cercano;
 	}
 
 }

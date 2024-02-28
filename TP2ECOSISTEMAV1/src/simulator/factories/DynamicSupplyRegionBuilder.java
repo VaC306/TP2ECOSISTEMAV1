@@ -2,6 +2,8 @@ package simulator.factories;
 
 import org.json.JSONObject;
 
+import simulator.model.DefaultRegion;
+import simulator.model.DynamicSupplyRegion;
 import simulator.model.FoodSupplier;
 import simulator.model.Region;
 
@@ -18,7 +20,21 @@ public class DynamicSupplyRegionBuilder extends Builder<Region>{
 
 	@Override
 	protected Region create_instance(JSONObject data) {
-		return null;
+		
+		if(data == null)
+			throw new IllegalArgumentException();
+		
+		//valores por defecto
+		double factor = 2.0;
+		double food = 1000.0;
+		
+		if(data.has("factor"))
+			factor = data.getDouble("factor");
+		
+		if(data.has("food"))
+			factor = data.getDouble("food");
+		
+		return new DynamicSupplyRegion(food, factor);
 	}
 	
 	@Override
