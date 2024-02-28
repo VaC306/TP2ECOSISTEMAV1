@@ -51,25 +51,28 @@ public class SheepBuilder extends Builder<Animal>{
 		
 		if(!data.has("pos"))
 		{
-			_pos = null;
+			//_pos = null;
+			double x = Utils._rand.nextDouble(800);
+			double y = Utils._rand.nextDouble(600);
+			_pos = new Vector2D(x, y);
 		}
 		else
 		{
-			
+				
 			JSONArray _x_range = data.getJSONArray("x_range");
 			JSONArray _y_range = data.getJSONArray("y_range");
-			
+				
 			//se comrpueba q sean 2d
 			if(_x_range.length()!=2 || _y_range.length()!=2 ) {
-						
+							
 				throw new IllegalArgumentException();
 			}
-			
+				
 			double x = Utils._rand.nextDouble(_x_range.getDouble(1));
 			double y = Utils._rand.nextDouble(_y_range.getDouble(1));
-			
+				
 			_pos = new Vector2D(x,y);
-			
+				
 			assert(_pos.getX() >= _x_range.getDouble(0) && _pos.getX() <= _x_range.getDouble(1));
 			assert(_pos.getY() >= _y_range.getDouble(0) && _pos.getY() <= _y_range.getDouble(1));
 		}

@@ -53,7 +53,7 @@ public class Wolf extends Animal{
 		while (_pos.getY() >= height) y = (_pos.getY() - height);
 		while (_pos.getY() < 0) y = (_pos.getY() + height);
 		this._pos = new Vector2D(x, y);
-
+		
 	}
 
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class RegionManager implements AnimalMapView{
@@ -52,9 +53,11 @@ public class RegionManager implements AnimalMapView{
 	{
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		
-		if(!_region.equals(_animal_region.equals(a))) //revisar esta condicion no creo que este bien
+		if(_region.equals(_animal_region.get(a))) //revisar condicion
 		{
-			//no se que hacer aqui
+			_animal_region.remove(a, _animal_region.get(a));
+			_region.add_animal(a);
+			_animal_region.put(a, _region);
 		}
 	}
 	
@@ -76,9 +79,9 @@ public class RegionManager implements AnimalMapView{
 	
 	void update_all_regions(double dt)
 	{
-		for(int i = 0; i < _cols; ++i)
+		for(int i = 0; i < _rows; ++i)
 		{
-			for(int j = 0; j < _height; ++j)
+			for(int j = 0; j < _cols; ++j)
 			{
 				_regions[i][j].update(dt);
 			}
@@ -136,7 +139,21 @@ public class RegionManager implements AnimalMapView{
 	
 	public JSONObject as_JSON()
 	{
-		JSONObject data = new JSONObject();
-		return null;
+		JSONObject ret = new JSONObject();
+		JSONArray _regiones = new JSONArray();
+		JSONObject _region = new JSONObject();
+		
+		ret.put("regiones", _regiones);
+		for(int i = 0; i < _rows; ++i)
+		{
+			for(int j = 0; j < _cols; ++j)
+			{
+				_region.put("row", i);
+				_region.put("col", j);
+				//_region.put("data", as_JSON()); //ver como hacerlo
+				_regiones.put( _region);
+			}
+		}
+		return ret;
 	}
 }

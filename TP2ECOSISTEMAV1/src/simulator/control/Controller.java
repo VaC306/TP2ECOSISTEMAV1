@@ -45,7 +45,7 @@ public class Controller {
 		for (Animalnfo a : animals)
 		ol.add(new ObjInfo(a.get_genetic_code(),
 		(int) a.get_position().getX(),
-		(int) a.get_position().getY(),8));
+		(int) a.get_position().getY(),(int)Math.round(a.get_age())+2));
 		return ol;
 		}
 	
@@ -94,83 +94,41 @@ public class Controller {
 			
 		}
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		/*
-	    if (data.has("regions")) {
-	        JSONArray regions = data.getJSONArray("regions");
-	        for (int i = 0; i < regions.length(); i++) {
-	            JSONObject region = regions.getJSONObject(i);
-	            JSONArray rowRange = region.getJSONArray("row");
-	            JSONArray colRange = region.getJSONArray("col");
-	            JSONObject spec = region.getJSONObject("spec");
-
-	            int rf = rowRange.getInt(0);
-	            int rt = rowRange.getInt(1);
-	            int cf = colRange.getInt(0);
-	            int ct = colRange.getInt(1);
-
-	            for (int R = rf; R <= rt; R++) {
-	                for (int C = cf; C <= ct; C++) {
-	                    // Simulador no tiene un método set_region que acepte JSONObject directamente,
-	                    // por lo que podrías crear la región usando el Factory<Region> y luego establecerla
-	                    // en el simulador.
-	         
-	                    Region newRegion = _region_factory.create_instance(spec);// Crea la región usando Factory<Region> y spec
-	                    _sim.set_region(R, C, newRegion);
-	                }
-	            }
-	        }
-	    }
-
-	    if (data.has("animals")) {
-	        JSONArray animals = data.getJSONArray("animals");
-	        for (int i = 0; i < animals.length(); i++) {
-	            JSONObject animal = animals.getJSONObject(i);
-	            int amount = animal.getInt("amount");
-	            JSONObject spec = animal.getJSONObject("spec");
-
-	            for (int j = 0; j < amount; j++) {
-	                // Simulador no tiene un método add_animal que acepte JSONObject directamente,
-	                // por lo que podrías crear el animal usando el Factory<Animal> y luego agregarlo
-	                // al simulador.
-	            	
-	            	
-	            	
-	                Animal newAnimal = _animal_factory.create_instance(spec);// Crea el animal usando Factory<Animal> y spec
-	                _sim.add_animal(newAnimal);
-	            }
-	        }
-	    }*/
 	}
 	
 	public void run(double t, double dt, boolean sv, OutputStream out)
 	{
-		_time = _sim.get_time();
-		while(_time > t)
-		{
-			_sim.advance(dt);
-		}
+		JSONObject init_state, final_state;
+		SimpleObjectViewer view = null;
 		
 		if(sv)
 		{
-			SimpleObjectViewer view = null;
 			view = new SimpleObjectViewer("[ECOSYSTEM]", _sim.get_map_info().get_width(), _sim.get_map_info().get_height(), 
 					_sim.get_map_info().get_cols(), _sim.get_map_info().get_rows());
-			
-			while (_time<t) {
-				_time += dt;
-				for( Animalnfo a : _sim.get_animals() ) ((Entity) a).update(dt); //revisar esto no creo que bien
-					view.update(to_animals_info(_sim.get_animals()), _time, dt);
-			}
+			view.update(to_animals_info(_sim.get_animals()), _sim.get_time(), dt);
 		}
+		
+		
+		init_state = _sim.as_JSON();
+		while(_sim.get_time() < t)
+		{
+			_sim.advance(dt);
+			if (sv) view.update(to_animals_info(_sim.get_animals()), _sim.get_time(), dt);
+		}
+		final_state = _sim.as_JSON();
+		
+		JSONObject _state = new JSONObject();
+		_state.put("in", init_state);
+		_state.put("out", final_state);
+		
+		
+		/*	
+		while (_time<t){
+			_time += dt;
+			for( Animalnfo a : _sim.get_animals() ) ((Entity) a).update(dt); //revisar esto no creo que bien
+				view.update(to_animals_info(_sim.get_animals()), _time, dt);
+		}*/
+			
+		//if (sv) view.close();
 	}
 }

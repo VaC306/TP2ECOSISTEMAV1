@@ -75,7 +75,7 @@ public class Simulator implements JSONable{
 	
 	public void advance(double dt)
 	{
-		this._time = _time + dt;
+		this._time += dt;
 		
 		for(Animal a: l)
 		{
@@ -91,7 +91,7 @@ public class Simulator implements JSONable{
 	
 	public JSONObject as_JSON()
 	{
-		JSONObject _obj = null;
+		JSONObject _obj = new JSONObject();
 		
 		_obj.put("time", _time);
 		_obj.put("state", _regmanager.as_JSON());

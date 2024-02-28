@@ -52,7 +52,10 @@ public class WolfBuilder extends Builder<Animal>{
 		
 		if(!data.has("pos"))
 		{
-			_pos = null;
+			//_pos = null;
+			double x = Utils._rand.nextDouble(800);
+			double y = Utils._rand.nextDouble(600);
+			_pos = new Vector2D(x, y);
 		}
 		else
 		{
