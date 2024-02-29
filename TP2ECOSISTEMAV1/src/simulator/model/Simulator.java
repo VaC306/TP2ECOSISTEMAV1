@@ -80,8 +80,21 @@ public class Simulator implements JSONable{
 		for(Animal a: l)
 		{
 			//quitar los animales muertos
+			if(a.get_state() == State.DEAD)
+			{
+				l.remove(a);
+				_regmanager.unregister_animal(a);
+			}
+			
 			a.update(dt); //actualizar cada animal
-			_regmanager.update_animal_region(a);
+			_regmanager.update_animal_region(a); //actualizar la región del animal
+			
+			if(a.is_pregnent())
+			{
+				Animal _baby = a.deliver_baby();
+				if(_baby != null)
+					add_animal(_baby);
+			}
 		}
 		
 		_regmanager.update_all_regions(dt);

@@ -72,7 +72,7 @@ public class RegionManager implements AnimalMapView{
 	
 	void unregister_animal(Animal a)
 	{
-		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		_region.remove_animal(a);
 		_animal_region.remove(a, _region);
 	}
@@ -132,7 +132,7 @@ public class RegionManager implements AnimalMapView{
 
 	@Override
 	public double get_food(Animal a, double dt) {
-		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
+		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		_region.get_food(a, dt);
 		return 0;
 	}

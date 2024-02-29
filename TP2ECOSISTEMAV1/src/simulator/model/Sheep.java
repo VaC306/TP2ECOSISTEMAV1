@@ -36,7 +36,6 @@ public class Sheep extends Animal{
 		}
 		
 		//ESTADO NORMAL
-		
 		if(this._state == State.NORMAL) {
 		
 			avanzapaso1(dt);
@@ -107,6 +106,12 @@ public class Sheep extends Animal{
 		while (_pos.getY() >= height) y = (_pos.getY() - height);
 		while (_pos.getY() < 0) y = (_pos.getY() + height);
 		this._pos = new Vector2D(x, y);
+		
+		
+		if(_energy == 0.0 || _age > 8.0)
+			//_state = State.DEAD;
+		if(_state != State.DEAD)
+			_region_mngr.get_food(this, dt);
 	}
 	
 	public void avanzapaso1(double dt) {

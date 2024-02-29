@@ -111,6 +111,14 @@ public abstract class Animal implements Animalnfo, Entity{
 		_dest = new Vector2D(a, b);
 	}
 	
+	protected Animal deliver_baby()
+	{
+		Animal baby;
+		baby = _baby;
+		_baby = null;
+		return baby;
+	}
+	
 	protected void move(double speed)
 	{
 		_pos = _pos.plus(_dest.minus(_pos).direction().scale(speed));
