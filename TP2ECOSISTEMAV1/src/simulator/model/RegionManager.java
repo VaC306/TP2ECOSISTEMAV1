@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -90,14 +91,30 @@ public class RegionManager implements AnimalMapView{
 	
 	public List<Animal> get_animals_in_range(Animal a, Predicate<Animal> filter)
 	{
-		List<Animal> _animals_in_range = new LinkedList<>();
-		Region _region = _regions[(int) a.get_position().getX()][(int) a.get_position().getY()];
-		for(Animal b : _region.getAnimals())
-		{
-			if(b.get_position().distanceTo(a.get_position()) <= a.get_sight_range())
-				_animals_in_range.add(b);
-		}
-		return _animals_in_range;	
+		 List<Animal> _animals_in_range = new LinkedList<>();
+		    Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+
+		    // Aplicar el filtro utilizando el Predicate
+		    List<Animal> filteredAnimals = _region.getAnimals().stream()
+		            .filter(filter)
+		            .filter(b -> b.get_position().distanceTo(a.get_position()) <= a.get_sight_range())
+		            .collect(Collectors.toList());
+
+		    // Añadir los animales filtrados a la lista resultante
+		    _animals_in_range.addAll(filteredAnimals);
+		    
+		    /*
+		    // Filtrar el animal más cercano
+		    Predicate<Animal> closestAnimalFilter = animals -> !animals.isEmpty();
+		    List<Animal> closestAnimals = get_animals_in_range(myAnimal, closestAnimalFilter);
+
+		    // Filtrar el primer animal en el rango de vista
+		    Predicate<Animal> firstAnimalInRangeFilter = animals -> !animals.isEmpty() && animals.get(0).get_position().distanceTo(myAnimal.get_position()) <= myAnimal.get_sight_range();
+		    List<Animal> firstAnimalInRange = get_animals_in_range(myAnimal, firstAnimalInRangeFilter);
+		    */ //esto poner donde queramos el filtro , revisar las condiciones
+		    
+		    
+		    return _animals_in_range;	
 	}
 
 	@Override

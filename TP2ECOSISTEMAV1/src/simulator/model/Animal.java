@@ -52,7 +52,6 @@ public abstract class Animal implements Animalnfo, Entity{
 	}
 	
 	protected Animal(Animal p1, Animal p2){
-		this._age=0.0;
 		
 		this._baby=null;
 		this._dest=null;
@@ -102,7 +101,6 @@ public abstract class Animal implements Animalnfo, Entity{
 			while (x < 0) x = (x + width);
 			while (y >= height) y = (y - height);
 			while (y < 0) y = (y + height);
-
 		}
 		
 		//posicion dentro del mapa de destino
