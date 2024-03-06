@@ -68,6 +68,15 @@ public class Wolf extends Animal{
 		while (_pos.getY() < 0) y = (_pos.getY() + height);
 		this._pos = new Vector2D(x, y);
 		
+		if(this.get_energy() == 0.0 && this.get_age() > 14.0)
+			this._state = State.DEAD;
+		
+		if(this.get_state() != State.DEAD)
+		{
+			if(this.get_energy() >= 0.0 && this.get_energy() < 100.0)
+				this._energy += _region_mngr.get_food(this, dt);
+		}
+		
 	}
 
 	private void actualizar(double dt)
