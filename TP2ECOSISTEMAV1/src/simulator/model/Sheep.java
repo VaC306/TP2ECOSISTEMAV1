@@ -72,8 +72,8 @@ public class Sheep extends Animal{
 				else
 				{
 					//buscar animal que se considere peligroso
-					Predicate<Animal> firstAnimalInRangeFilter = ;
-					_region_mngr.get_animals_in_range(this, Diet.CARNIVORE);
+					//Predicate<Animal> firstAnimalInRangeFilter = ;
+					//_region_mngr.get_animals_in_range(this, Diet.CARNIVORE);
 				}
 			}
 			else
