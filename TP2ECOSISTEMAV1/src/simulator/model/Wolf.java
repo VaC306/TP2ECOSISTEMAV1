@@ -2,6 +2,8 @@ package simulator.model;
 
 
 
+import java.util.function.Predicate;
+
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 
@@ -18,15 +20,15 @@ public class Wolf extends Animal{
 	{
 		super("WOLF", Diet.CARNIVORE, 50.0, 60.0, mate_strategy, pos);
 		this._pos = pos;
-		_hunting_strategy = hunting_strategy;
-		_mate_strategy = mate_strategy;
+		this._hunting_strategy = hunting_strategy;
+		this._mate_strategy = mate_strategy;
 	}
 	
 	protected Wolf(Wolf p1, Animal p2)
 	{
 		super(p1, p2);
 		_hunting_strategy = p1._hunting_strategy;
-		_hunt_target = null; //ver si es de este o p1
+		p1._hunt_target = null; 
 	}
 	
 
@@ -38,34 +40,34 @@ public class Wolf extends Animal{
 		{
 			
 		}
-		
-		actualizar(dt);
+		else
+		{
+			actualizar(dt);
 			
-		
-		if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
-		{
-			//mantener al WOLF en la zona deseada
-			double x = 0;
-			double y = 0;
-		
-			while (_pos.getX() >= width) x = (_pos.getX() - width);
-			while (_pos.getX() < 0) x = (_pos.getX() + width);
-			while (_pos.getY() >= height) y = (_pos.getY() - height);
-			while (_pos.getY() < 0) y = (_pos.getY() + height);
-			this._pos = new Vector2D(x, y);
-		
-			this._state = State.NORMAL;
+			
+			if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
+			{
+				double x = 0;
+				double y = 0;
+			
+				while (x >= width) x = (x - width);
+				while (x < 0) x = (x + width);
+				while (y >= height) y = (y - height);
+				while (y < 0) y = (y + height);
+				this._pos = new Vector2D(x, y);
+			
+				this._state = State.NORMAL;
+			}
+			
+			if(this.get_energy() == 0.0 || this.get_age() > 14.0)
+				this._state = State.DEAD;
+			
+			if(this.get_state() != State.DEAD)
+			{
+				if(this.get_energy() >= 0.0 && this.get_energy() < 100.0)
+					this._energy += _region_mngr.get_food(this, dt);
+			}
 		}
-		
-		if(this.get_energy() == 0.0 || this.get_age() > 14.0)
-			this._state = State.DEAD;
-		
-		if(this.get_state() != State.DEAD)
-		{
-			if(this.get_energy() >= 0.0 && this.get_energy() < 100.0)
-				this._energy += _region_mngr.get_food(this, dt);
-		}
-		
 	}
 
 	private void actualizar(double dt)
@@ -109,7 +111,13 @@ public class Wolf extends Animal{
 			if(_hunt_target == null || _hunt_target.get_state() == State.DEAD 
 					|| this.get_position().minus(_hunt_target.get_position()).magnitude() > this.get_sight_range())
 			{
-				//buscar animal para cazar
+				//buscar animal que se considere peligroso
+				Predicate<Animal> _cazar = (a)-> a.get_diet()== Diet.HERBIVORE;
+				
+				_region_mngr.get_animals_in_range(this, _cazar);
+				
+				//mantenemos una referencia del animal peligroso
+				_hunt_target = _hunting_strategy.select(_hunt_target, _region_mngr.get_animals_in_range(this, _cazar));
 			}
 			if(_hunt_target == null)
 			{
@@ -175,7 +183,13 @@ public class Wolf extends Animal{
 			}
 			else if(_mate_target == null)
 			{
-				//buscar animal 
+				//buscar animal que se considere peligroso
+				Predicate<Animal> MateAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
+				
+				_region_mngr.get_animals_in_range(this, MateAnimals);
+				
+				//mantenemos una referencia del animal mate
+				_mate_target =_mate_strategy.select(this, _region_mngr.get_animals_in_range(this, MateAnimals)); 
 				
 			}
 		}

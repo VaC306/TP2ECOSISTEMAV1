@@ -28,7 +28,6 @@ import simulator.view.SimpleObjectViewer.ObjInfo;
 public class Controller {
 	
 	protected Simulator _sim;
-	protected double _time;
 	
 	private static Factory<Animal> _animal_factory;
 	private static Factory<Region> _region_factory;

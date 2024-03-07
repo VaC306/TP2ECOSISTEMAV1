@@ -42,20 +42,19 @@ public class Sheep extends Animal{
 		//mantener al SHEEP en la zona deseada
 		if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
 		{
-			//mantener al WOLF en la zona deseada
 			double x = 0;
 			double y = 0;
 		
-			while (_pos.getX() >= width) x = (_pos.getX() - width);
-			while (_pos.getX() < 0) x = (_pos.getX() + width);
-			while (_pos.getY() >= height) y = (_pos.getY() - height);
-			while (_pos.getY() < 0) y = (_pos.getY() + height);
+			while (x >= width) x = (x - width);
+			while (x < 0) x = (x + width);
+			while (y >= height) y = (y - height);
+			while (y < 0) y = (y + height);
 			this._pos = new Vector2D(x, y);
 		
 			this._state = State.NORMAL;
 		}
 		//si su energia es 0 o age >8 cambia a DEAD
-		if(_energy == 0.0 || _age > 8.0)
+		if(this.get_energy() == 0.0 ||this.get_age() > 8.0)
 			_state = State.DEAD;
 		//pide comida y la añade a su energy(entre 0 y 100)
 		if(this.get_state() != State.DEAD)
@@ -232,8 +231,10 @@ public class Sheep extends Animal{
 		this._age += dt; 
 		
 		//quita energia
-		if(_energy >= 00.0 && _energy <= 100.0)
-			this._energy -= 20.0*dt;
+		/*if(_energy >= 00.0 && _energy <= 100.0)
+			this._energy -= 20.0*dt;*/
+		this._energy = Math.max(0.0, Math.min(100.0, this._energy - 20.0 * dt));
+
 		
 		//suma deseo
 		if(_desire >= 0.0 && _desire <= 100.0)

@@ -86,16 +86,18 @@ public class Simulator implements JSONable{
 				l.remove(a);
 				_regmanager.unregister_animal(a);
 			}
-			
-			a.update(dt); //actualizar cada animal
-			_regmanager.update_animal_region(a); //actualizar la regi�n del animal
-			
-			if(a.is_pregnent())
+			else
 			{
-				Animal _baby = a.deliver_baby();
-				if(_baby != null)
-					add_animal(_baby);
-			}
+				a.update(dt); //actualizar cada animal
+				_regmanager.update_animal_region(a); //actualizar la regi�n del animal
+				
+				if(a.is_pregnent())
+				{
+					Animal _baby = a.deliver_baby();
+					if(_baby != null)
+						add_animal(_baby);
+				}
+			}	
 		}
 		
 		_regmanager.update_all_regions(dt);
