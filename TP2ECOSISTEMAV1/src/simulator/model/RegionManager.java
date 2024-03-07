@@ -69,6 +69,7 @@ public class RegionManager implements AnimalMapView{
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		_region.add_animal(a);
 		_animal_region.put(a, _region);
+		update_animal_region(a);
 	}
 	
 	void unregister_animal(Animal a)
@@ -76,6 +77,7 @@ public class RegionManager implements AnimalMapView{
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 		_region.remove_animal(a);
 		_animal_region.remove(a, _region);
+		update_animal_region(a);
 	}
 	
 	void update_all_regions(double dt)

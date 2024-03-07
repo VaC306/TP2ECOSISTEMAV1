@@ -85,11 +85,11 @@ public abstract class Animal implements Animalnfo, Entity{
 		double height = _region_mngr.get_height();
 		
 		
-		if(_pos == null)
+		if(this._pos == null)
 		{
 			double x = Utils._rand.nextDouble(width - 1);
 			double y = Utils._rand.nextDouble(height - 1);
-			_pos = new Vector2D(x, y);
+			this._pos = new Vector2D(x, y);
 			
 		}
 		else
@@ -119,7 +119,7 @@ public abstract class Animal implements Animalnfo, Entity{
 	
 	protected void move(double speed)
 	{
-		_pos = _pos.plus(_dest.minus(_pos).direction().scale(speed));
+		this._pos = _pos.plus(_dest.minus(_pos).direction().scale(speed));
 	}
 	
 	public State get_state()

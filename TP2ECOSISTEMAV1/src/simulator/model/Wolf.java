@@ -58,17 +58,7 @@ public class Wolf extends Animal{
 			this._state = State.NORMAL;
 		}
 		
-		//mantener al WOLF en la zona deseada
-		double x = 0;
-		double y = 0;
-		
-		while (_pos.getX() >= width) x = (_pos.getX() - width);
-		while (_pos.getX() < 0) x = (_pos.getX() + width);
-		while (_pos.getY() >= height) y = (_pos.getY() - height);
-		while (_pos.getY() < 0) y = (_pos.getY() + height);
-		this._pos = new Vector2D(x, y);
-		
-		if(this.get_energy() == 0.0 && this.get_age() > 14.0)
+		if(this.get_energy() == 0.0 || this.get_age() > 14.0)
 			this._state = State.DEAD;
 		
 		if(this.get_state() != State.DEAD)
@@ -120,9 +110,86 @@ public class Wolf extends Animal{
 			if(_hunt_target == null || _hunt_target.get_state() == State.DEAD 
 					|| this.get_position().minus(_hunt_target.get_position()).magnitude() > this.get_sight_range())
 			{
+				//buscar animal para cazar
+			}
+			if(_hunt_target == null)
+			{
+				//avanzar
+				if(_dest.minus(_pos).magnitude() < 8.0)
+				{
+					double x = Utils._rand.nextDouble(800);
+					double y = Utils._rand.nextDouble(600);
+					this._dest = new Vector2D(x, y); //elije un nuevo destino
+				}
+						
+				move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
+								
+				this._age += dt; // añade dt a la edad
+								
+				if(_energy >= 0.0 && _energy <= 100.0)
+					this._energy -= 18.0*dt;
+								
+				if(_desire >= 0.0 && _desire <= 100.0)
+					this._desire += 30.0*dt;
+			}
+			else if(_hunt_target != null)
+			{
+				this._dest = _hunt_target.get_position();
+				move(3.0*_speed*dt*Math.exp((_energy-100.0)*0.007));
+				this._age += dt;
 				
+				if(_energy >= 0.0 && _energy <= 100.0)
+					this._energy -= 18.0*1.2*dt;
+				
+				if(_desire >= 0.0 && _desire <= 100.0)
+					this._desire += 30.0*dt;
+				
+				if(_hunt_target.get_position().minus(_pos).magnitude() < 8.0)
+				{
+					_hunt_target._state = State.DEAD;
+					_hunt_target = null;
+					if(_energy >= 0.0 && _energy <= 100.0)
+						this._energy += 50.0*dt;
+				}
+			}
+			//cambio de estado
+			if(this.get_energy() > 50.0)
+			{
+				if(this._desire < 65.0)
+					this._state = State.NORMAL;
+				else
+					this._state = State.MATE;
 			}
 			
+		}
+		
+		
+		//MODO MATE
+		if(this._state == State.MATE)
+		{
+			if(_mate_target != null)
+			{
+				if(_mate_target._state == State.DEAD || _mate_target.get_position().minus(_pos).magnitude() > this.get_sight_range())
+				{
+					_mate_target = null;
+				}
+			}
+			else if(_mate_target == null)
+			{
+				//buscar animal 
+				
+			}
+		}
+		
+		//cambio de estado
+		if(this.get_energy() < 50.0)
+		{
+			this._state = State.HUNGER;
+		}
+		else
+		{
+			if(this._desire < 65.0)
+				this._state = State.NORMAL;
 		}
 	}
 

@@ -120,14 +120,6 @@ public class Controller {
 		JSONObject _state = new JSONObject();
 		_state.put("in", init_state);
 		_state.put("out", final_state);
-		
-		
-		/*	
-		while (_time<t){
-			_time += dt;
-			for( Animalnfo a : _sim.get_animals() ) ((Entity) a).update(dt); //revisar esto no creo que bien
-				view.update(to_animals_info(_sim.get_animals()), _time, dt);
-		}*/
 			
 		//if (sv) view.close();
 	}
