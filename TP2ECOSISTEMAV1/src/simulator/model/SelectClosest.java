@@ -9,7 +9,7 @@ public class SelectClosest implements SelectionStrategy{
 		Animal _animal_cercano = null;
 		double _minima_distancia = Double.MAX_VALUE;
 		
-		if(as == null)
+		if(as.isEmpty())
 			return null;
 		
 		for(Animal b: as)

@@ -9,7 +9,6 @@ import simulator.misc.Vector2D;
 
 public class Wolf extends Animal{
 	
-	protected Vector2D _pos;
 	protected double width = 800.0;
 	protected double height = 600.0;
 	protected Animal _hunt_target;
@@ -18,7 +17,7 @@ public class Wolf extends Animal{
 	public Wolf(SelectionStrategy mate_strategy, SelectionStrategy hunting_strategy, Vector2D pos)
 	{
 		super("WOLF", Diet.CARNIVORE, 50.0, 60.0, mate_strategy, pos);
-		_pos = pos;
+		this._pos = pos;
 		_hunting_strategy = hunting_strategy;
 		_mate_strategy = mate_strategy;
 	}
@@ -75,7 +74,7 @@ public class Wolf extends Animal{
 		if(this.get_state() == State.NORMAL)
 		{	
 			//avanzar
-			if(_dest.minus(_pos).magnitude() < 8.0)
+			if(_pos.distanceTo(_dest) < 8.0)
 			{
 				double x = Utils._rand.nextDouble(800);
 				double y = Utils._rand.nextDouble(600);
@@ -84,7 +83,7 @@ public class Wolf extends Animal{
 					
 			move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
 							
-			this._age += dt; // añade dt a la edad
+			this._age += dt; // aï¿½ade dt a la edad
 							
 			if(_energy >= 0.0 && _energy <= 100.0)
 				this._energy -= 18.0*dt;
@@ -124,7 +123,7 @@ public class Wolf extends Animal{
 						
 				move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
 								
-				this._age += dt; // añade dt a la edad
+				this._age += dt; // aï¿½ade dt a la edad
 								
 				if(_energy >= 0.0 && _energy <= 100.0)
 					this._energy -= 18.0*dt;

@@ -1,6 +1,7 @@
 package simulator.model;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class Simulator implements JSONable{
 			}
 			
 			a.update(dt); //actualizar cada animal
-			_regmanager.update_animal_region(a); //actualizar la región del animal
+			_regmanager.update_animal_region(a); //actualizar la regiï¿½n del animal
 			
 			if(a.is_pregnent())
 			{

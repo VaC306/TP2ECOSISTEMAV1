@@ -8,7 +8,7 @@ public class SelectYoungest implements SelectionStrategy{
 	public Animal select(Animal a, List<Animal> as) {
 		double youngestAge = Double.MAX_VALUE;
 		
-		if(as == null)
+		if(as.isEmpty())
 			return null;
 		
 		for (Animal animal : as) {
