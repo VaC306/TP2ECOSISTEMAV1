@@ -270,39 +270,6 @@ public class Main {
 		return ol;
 		}
 	
-	private static void simulation() {
-		List<Animal> l = new LinkedList<>();
-		
-		for(int j = 0; j < 30; j++)
-		{
-			double x = Utils._rand.nextDouble(800);
-			double y = Utils._rand.nextDouble(600);
-			Vector2D p = new Vector2D(x, y);
-			l.add(new Wolf(null, null, p));
-		}
-		
-		for(int i = 0; i < 200; i++)
-		{
-			double x = Utils._rand.nextDouble(800);
-			double y = Utils._rand.nextDouble(600);
-			Vector2D v = new Vector2D(x, y);
-			l.add(new Sheep(null, null, v));
-		}
-		
-		
-		double dt = 0.003;
-		double time = 0.0;
-		
-		SimpleObjectViewer view = null;
-		view = new SimpleObjectViewer("[ECOSYSTEM]", 800, 600, 15, 20);
-		
-		while (time<10) {
-		time += dt;
-		for( Animal a : l ) a.update(dt);
-		view.update(to_animals_info(l), time, dt);
-		}
-		
-	}
 	
 	
 	
