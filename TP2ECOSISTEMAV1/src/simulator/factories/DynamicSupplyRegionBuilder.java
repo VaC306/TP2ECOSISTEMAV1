@@ -8,10 +8,13 @@ import simulator.model.FoodSupplier;
 import simulator.model.Region;
 
 public class DynamicSupplyRegionBuilder extends Builder<Region>{
-
+	
+	private Integer factor;
+	private double food;
+	
 	public DynamicSupplyRegionBuilder()
 	{
-		super("default", "a");
+		super("dynamic", "a");
 	}
 	
 	public DynamicSupplyRegionBuilder(String type_tag, String desc) {
@@ -25,14 +28,15 @@ public class DynamicSupplyRegionBuilder extends Builder<Region>{
 			throw new IllegalArgumentException();
 		
 		//valores por defecto
-		double factor = 2.0;
-		double food = 1000.0;
-		
+		factor = 2;
+		food = 1000.0;
+	
 		if(data.has("factor"))
-			factor = data.getDouble("factor");
-		
+			factor = data.getInt("factor");
 		if(data.has("food"))
-			factor = data.getDouble("food");
+			food = data.getDouble("food");
+		
+			
 		
 		return new DynamicSupplyRegion(food, factor);
 	}

@@ -87,13 +87,14 @@ public abstract class Animal implements Animalnfo, Entity{
 		
 		if(this._pos == null)
 		{
-			double x = Utils._rand.nextDouble(width - 1);
-			double y = Utils._rand.nextDouble(height - 1);
+			double x = Utils._rand.nextDouble(_region_mngr.get_width());
+			double y = Utils._rand.nextDouble(_region_mngr.get_height());
 			this._pos = new Vector2D(x, y);
 			
 		}
 		else
 		{
+			//ajustar la posicion si esta fuera del mapa
 			double x = _pos.getX();
 			double y = _pos.getY();
 			
@@ -101,6 +102,8 @@ public abstract class Animal implements Animalnfo, Entity{
 			while (x < 0) x = (x + width);
 			while (y >= height) y = (y - height);
 			while (y < 0) y = (y + height);
+			
+			this._pos = new Vector2D(x,y);
 		}
 		
 		//posicion dentro del mapa de destino
@@ -174,7 +177,7 @@ public abstract class Animal implements Animalnfo, Entity{
 	
 	public boolean is_pregnent()
 	{
-		return _baby == null;
+		return _baby != null;
 	}
 	
 	public JSONObject as_JSON()

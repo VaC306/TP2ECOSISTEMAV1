@@ -1,9 +1,11 @@
 package simulator.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ public class Simulator implements JSONable{
 	protected double _time;
 	protected RegionManager _regmanager;
 	protected List<Animal> l;
+	ListIterator<Animal> it;
 	protected Factory<Animal> _animals_factory;
 	protected Factory<Region> _regions_factory;
 	
@@ -27,6 +30,7 @@ public class Simulator implements JSONable{
 		
 		_regmanager = new RegionManager(cols, rows, width, height);
 		l = new LinkedList<>();
+		it = l.listIterator();
 		this._cols = cols;
 		this._rows = rows;
 		this._width = width;
@@ -51,6 +55,7 @@ public class Simulator implements JSONable{
 	{
 		Animal nuevo_animal = _animals_factory.create_instance(a_json);
 		add_animal(nuevo_animal);
+		
 	}
 	
 	private void set_region(int row, int col, Region r)
@@ -78,31 +83,36 @@ public class Simulator implements JSONable{
 	{
 		this._time += dt;
 		
-		for(Animal a: l)
+		
+		it = l.listIterator();
+		
+		//siempre que haya un siguiente animal
+		while(it.hasNext())
 		{
+			Animal a = it.next();
+			
 			//quitar los animales muertos
 			if(a.get_state() == State.DEAD)
 			{
-				l.remove(a);
+				//l.remove(a);
+				it.remove();
 				_regmanager.unregister_animal(a);
 			}
-			else
-			{
-				a.update(dt); //actualizar cada animal
-				_regmanager.update_animal_region(a); //actualizar la regi�n del animal
+			
+			a.update(dt); //actualizar cada animal
+			_regmanager.update_animal_region(a); //actualizar la regi�n del animal
 				
-				if(a.is_pregnent())
-				{
-					Animal _baby = a.deliver_baby();
-					if(_baby != null)
-						add_animal(_baby);
-				}
-			}	
+			_regmanager.update_all_regions(dt);
+			
+			if(a.is_pregnent())
+			{
+				Animal _baby = a.deliver_baby();
+				//add_animal(_baby);
+				it.add(_baby);
+				_regmanager.register_animal(_baby);
+			}
+				
 		}
-		
-		_regmanager.update_all_regions(dt);
-		
-		
 	}
 	
 	public JSONObject as_JSON()

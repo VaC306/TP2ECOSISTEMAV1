@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -30,16 +29,10 @@ import simulator.factories.SelectFirstBuilder;
 import simulator.factories.SheepBuilder;
 import simulator.factories.WolfBuilder;
 import simulator.misc.Utils;
-import simulator.misc.Vector2D;
 import simulator.model.Animal;
-import simulator.model.Animalnfo;
 import simulator.model.Region;
 import simulator.model.SelectionStrategy;
-import simulator.model.Sheep;
 import simulator.model.Simulator;
-import simulator.model.Wolf;
-import simulator.view.SimpleObjectViewer;
-import simulator.view.SimpleObjectViewer.ObjInfo;
 
 public class Main {
 
@@ -261,23 +254,12 @@ public class Main {
 	}
 	
 	
-	private static List<ObjInfo> to_animals_info(List<? extends Animalnfo> animals) {
-		List<ObjInfo> ol = new ArrayList<>(animals.size());
-		for (Animalnfo a : animals)
-		ol.add(new ObjInfo(a.get_genetic_code(),
-		(int) a.get_position().getX(),
-		(int) a.get_position().getY(),8));
-		return ol;
-		}
-	
-	
 	
 	
 	public static void main(String[] args) {
 		Utils._rand.setSeed(2147483647l);
 		try {
 			start(args);
-			//simulation();
 		} catch (Exception e) {
 			System.err.println("Something went wrong ...");
 			System.err.println();

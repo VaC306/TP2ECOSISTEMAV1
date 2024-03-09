@@ -1,6 +1,7 @@
 package simulator.control;
 
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,8 +70,9 @@ public class Controller {
 				
 				for (int R = rf; R <= rt; R++) {
 	                for (int C = cf; C <= ct; C++) {
-	         
+	               
 	                    _sim.set_region(R, C, spec);
+	                    
 	                }
 	            }	
 			}
@@ -97,6 +99,7 @@ public class Controller {
 	
 	public void run(double t, double dt, boolean sv, OutputStream out)
 	{
+		PrintStream p = new PrintStream(out);
 		JSONObject init_state, final_state;
 		SimpleObjectViewer view = null;
 		
@@ -119,7 +122,11 @@ public class Controller {
 		JSONObject _state = new JSONObject();
 		_state.put("in", init_state);
 		_state.put("out", final_state);
-			
+		
+		p.println("{" + "\n");
+		p.println(_state);
+		p.println("}" + "\n");
+		
 		//if (sv) view.close();
 	}
 }

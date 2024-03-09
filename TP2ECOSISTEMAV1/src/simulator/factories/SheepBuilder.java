@@ -25,9 +25,9 @@ public class SheepBuilder extends Builder<Animal>{
 
 	@Override
 	protected Animal create_instance(JSONObject data) {
+		/*
+		JSONObject _selection = new JSONObject();
 		
-		JSONObject _first_select = new JSONObject();
-		_first_select.put("type", "first");
 		
 		//valid data
 		if(data == null)
@@ -38,12 +38,60 @@ public class SheepBuilder extends Builder<Animal>{
 		
 		if(!data.has("mate_strategy"))
 		{
-			_mate_strategy = _selection_strategy_factory.create_instance(_first_select); //ver como selectfirst
+			_mate_strategy = _selection_strategy_factory.create_instance(_selection); 
+		}
+		else
+		{
+			JSONObject mate = data.getJSONObject("mate_strategy");
+			String type = mate.getString("type");
+			
+			if(type.equals("youngest"))
+			{
+				_selection.put("youngest", "a");
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
+			}
+			else if(type.equals("first"))
+			{
+				_selection.put("type", "first");
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
+			}
+			if(type.equals("closest"))
+			{
+				_selection.put("type", "closest");
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
+			}
+		}
+		*/ //revisar
+		JSONObject _selection = new JSONObject();
+		_selection.put("type", "first");
+		
+		//valid data
+		if(data == null)
+			throw new IllegalArgumentException();
+			
+		SelectionStrategy _mate_strategy = null;
+		SelectionStrategy _danger_strategy = null;
+		
+		if(!data.has("mate_strategy"))
+		{
+			_mate_strategy = _selection_strategy_factory.create_instance(_selection); //ver como selectfirst
 		}
 		
 		if(!data.has("danger_strategy"))
 		{
-			_danger_strategy = _selection_strategy_factory.create_instance(_first_select); //ver como selectfirst
+			_danger_strategy = _selection_strategy_factory.create_instance(_selection);
+		}
+		else
+		{
+			JSONObject mate = data.getJSONObject("mate_strategy");
+			String type = mate.getString("type");
+			
+			if(type.equals("youngest"))
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
+			else if(type.equals("first"))
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
+			if(type.equals("closest"))
+				_mate_strategy = _selection_strategy_factory.create_instance(_selection);
 		}
 		
 		Vector2D _pos = new Vector2D();
@@ -51,10 +99,7 @@ public class SheepBuilder extends Builder<Animal>{
 		
 		if(!data.has("pos"))
 		{
-			//_pos = null;
-			double x = Utils._rand.nextDouble(800);
-			double y = Utils._rand.nextDouble(600);
-			_pos = new Vector2D(x, y);
+			_pos = null;
 		}
 		else
 		{

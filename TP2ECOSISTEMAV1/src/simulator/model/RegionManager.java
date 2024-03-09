@@ -18,7 +18,7 @@ public class RegionManager implements AnimalMapView{
 	protected int _height;
 	protected int _region_height;
 	protected int _region_width;
-	protected DefaultRegion[][] _regions;
+	protected Region[][] _regions;
 	protected Map<Animal, Region> _animal_region;
 	
 	public RegionManager(int cols, int rows, int width, int height)
@@ -34,7 +34,7 @@ public class RegionManager implements AnimalMapView{
 		_region_width = _width / _cols;
 		_region_height = _height / _rows;
 		
-		this._regions = new DefaultRegion[rows][cols];
+		this._regions = new Region[rows][cols];
 		
 		for(int i = 0; i < rows; i++)
 			for(int j = 0; j < cols; j++)
@@ -47,18 +47,25 @@ public class RegionManager implements AnimalMapView{
 	void set_region(int row, int col, Region r)
 	{
 		//actualizar lista de animales de la region
-		this._regions[row][col] = (DefaultRegion) r;
+		r.l = this._regions[row][col].l;
+		this._regions[row][col] = r;
+		for(Animal a : r.l)
+		{
+			_animal_region.replace(a, r);
+		}
 	}
 	
 	void update_animal_region(Animal a)
 	{
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		Region _old_region = _animal_region.get(a);
 		
-		if(_region.equals(_animal_region.get(a))) //revisar condicion
+		if((_old_region != null) && !_old_region.equals(_region))
 		{
-			_animal_region.remove(a, _animal_region.get(a));
 			_region.add_animal(a);
+			_old_region.remove_animal(a);
 			_animal_region.put(a, _region);
+			_animal_region.remove(a, _old_region);
 		}
 	}
 	
@@ -67,6 +74,7 @@ public class RegionManager implements AnimalMapView{
 		a.init(this);
 		
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		
 		_region.add_animal(a);
 		_animal_region.put(a, _region);
 		update_animal_region(a);
