@@ -33,7 +33,7 @@ public class Sheep extends Animal{
 	public void update(double dt) {
 		
 		//si le estado es DEAD no hace nada
-		if(this.get_state() == State.DEAD) {
+		if(this.get_state().equals(State.DEAD)) {
 			
 		}
 		else
@@ -91,13 +91,12 @@ public class Sheep extends Animal{
 				if(_danger_source != null){
 					this._state = State.DANGER;
 					_mate_target = null;
-				}
-				
-				if(this._desire > 65.0 && _danger_source == null) 
-				{
-					this._state = State.MATE;
-					_danger_source = null;
 				}	
+			}
+			if(this._desire > 65.0 && _danger_source == null) 
+			{
+				this._state = State.MATE;
+				_danger_source = null;
 			}
 		}
 		

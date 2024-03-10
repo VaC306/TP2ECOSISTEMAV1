@@ -157,19 +157,22 @@ public class RegionManager implements AnimalMapView{
 	{
 		JSONObject ret = new JSONObject();
 		JSONArray _regiones = new JSONArray();
-		JSONObject _region = new JSONObject();
 		
-		ret.put("regiones", _regiones);
+		
 		for(int i = 0; i < _rows; ++i)
 		{
 			for(int j = 0; j < _cols; ++j)
 			{
+				JSONObject _region = new JSONObject();
+				
 				_region.put("row", i);
 				_region.put("col", j);
-				//_region.put("data", as_JSON()); //ver como hacerlo
-				_regiones.put( _region);
+				_region.put("data", _regions[i][j].as_JSON()); //ver como hacerlo
+				
+				_regiones.put(_region);
 			}
 		}
+		ret.put("regiones", _regiones);
 		return ret;
 	}
 }

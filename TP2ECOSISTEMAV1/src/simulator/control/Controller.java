@@ -100,7 +100,8 @@ public class Controller {
 	public void run(double t, double dt, boolean sv, OutputStream out)
 	{
 		PrintStream p = new PrintStream(out);
-		JSONObject init_state, final_state;
+		JSONObject init_state = new JSONObject(); 
+		JSONObject final_state = new JSONObject();
 		SimpleObjectViewer view = null;
 		
 		if(sv)
@@ -111,22 +112,18 @@ public class Controller {
 		}
 		
 		
-		init_state = _sim.as_JSON();
+		init_state.put("in", _sim.as_JSON());
 		while(_sim.get_time() < t)
 		{
 			_sim.advance(dt);
 			if (sv) view.update(to_animals_info(_sim.get_animals()), _sim.get_time(), dt);
 		}
-		final_state = _sim.as_JSON();
+		final_state.put("out", _sim.as_JSON());
 		
-		JSONObject _state = new JSONObject();
-		_state.put("in", init_state);
-		_state.put("out", final_state);
-		
-		p.println("{" + "\n");
-		p.println(_state);
-		p.println("}" + "\n");
-		
-		//if (sv) view.close();
+		p.println("{");
+		p.println(init_state);
+		p.println(final_state);
+		p.println("}");
+
 	}
 }
