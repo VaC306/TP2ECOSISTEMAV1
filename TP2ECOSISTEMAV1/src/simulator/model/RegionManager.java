@@ -112,7 +112,7 @@ public class RegionManager implements AnimalMapView{
             }
 		}
 
-		// Añadir los animales filtrados a la lista resultante
+		// Aï¿½adir los animales filtrados a la lista resultante
 		return _animals_in_range;	
 	}
 
@@ -149,8 +149,7 @@ public class RegionManager implements AnimalMapView{
 	@Override
 	public double get_food(Animal a, double dt) {
 		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
-		_region.get_food(a, dt);
-		return 0;
+		return _region.get_food(a, dt);
 	}
 	
 	public JSONObject as_JSON()
