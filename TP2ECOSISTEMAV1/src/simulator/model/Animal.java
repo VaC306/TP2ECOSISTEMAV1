@@ -84,7 +84,7 @@ public abstract class Animal implements Animalnfo, Entity{
 		double width = _region_mngr.get_width();
 		double height = _region_mngr.get_height();
 		
-		if(this._pos == null)
+		if(this.get_position() == null)
 		{
 			this._pos = elegir_pos_rand();
 		}

@@ -43,7 +43,6 @@ public class Sheep extends Animal{
 			//mantener al SHEEP en la zona deseada
 			if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
 			{
-				
 				ajustar_pos(width, height);
 				
 				this._state = State.NORMAL;
@@ -53,7 +52,7 @@ public class Sheep extends Animal{
 				this._state = State.DEAD;
 			
 			//pide comida y la añade a su energy(entre 0 y 100)
-			if(this.get_state() != State.DEAD)
+			if(!this.get_state().equals(State.DEAD))
 			{
 				_energy = Math.max(0.0, Math.min(_energy + _region_mngr.get_food(this, dt), 100.0));//energy + get_food(this, dt) (0-100)
 			}
@@ -95,22 +94,21 @@ public class Sheep extends Animal{
 				
 			case DANGER:
 				//si el animal peligroso ya ha muerto por alguna otra razon
-				if(this._danger_source != null && this._state ==State.DEAD) {
+				if(this._danger_source != null && this.get_state() ==State.DEAD) {
 					this._danger_source =null;
 				}
-				if(this._danger_source==null) {
+				if(this._danger_source.equals(null)) {
 					avanzapaso1(dt);
 				}
 				
 				if(this._danger_source != null) {
 					this._dest =_pos.plus(_pos.minus(_danger_source.get_position()).direction());
 					
-					avanzandopaso2(dt);
+					avanzapaso2(dt);
 				}
 				
 				//cambio de estado
-				
-				if(this._danger_source==null || _danger_source.get_position().distanceTo(this.get_position())>this.get_sight_range()) {
+				if(this._danger_source == null || _danger_source.get_position().distanceTo(this.get_position()) > this.get_sight_range()) {
 					//buscar animal que se considere peligroso
 					Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
 					
@@ -126,7 +124,8 @@ public class Sheep extends Animal{
 							this._state = State.NORMAL;
 							_danger_source = null;
 							_mate_target = null;
-						}else
+						}
+						else
 						{
 							this._state = State.MATE;
 							_danger_source = null;
@@ -141,7 +140,6 @@ public class Sheep extends Animal{
 					if(this._mate_target != null && this._state ==State.DEAD || (this._mate_target != null &&_mate_target.get_position().distanceTo(this.get_position())>this.get_sight_range())) {
 						this._mate_target =null;
 					}
-					
 					
 					
 					if(this._mate_target==null) {
@@ -162,9 +160,9 @@ public class Sheep extends Animal{
 					{
 						this._dest = _mate_target.get_position();
 									
-						avanzandopaso2(dt);
+						avanzapaso2(dt);
 						//si la distancia es menos q 8, se empareja y tienen un bebe
-						if(_pos.distanceTo(_mate_target.get_position()) < 8.0) {
+						if(this.get_position().distanceTo(_mate_target.get_position()) < 8.0) {
 							this._desire=0.0;
 							_mate_target._desire=0.0;
 								
@@ -216,7 +214,7 @@ public class Sheep extends Animal{
 	
 	private void avanzapaso1(double dt) {
 		//elije un nuevo destino
-		if(_pos.distanceTo(_dest) < 8.0)
+		if(this.get_position().distanceTo(this.get_destination()) < 8.0)
 		{
 			this._dest = elegir_pos_rand();
 		}
@@ -236,7 +234,7 @@ public class Sheep extends Animal{
 		
 	}
 	
-	private void avanzandopaso2(double dt){
+	private void avanzapaso2(double dt){
 		//avanza
 		move(2.0*_speed*dt*Math.exp((_energy-100.0)*0.007)); 
 				
