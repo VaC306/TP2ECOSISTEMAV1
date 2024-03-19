@@ -21,6 +21,7 @@ public class DynamicSupplyRegion extends Region implements FoodSupplier{
 	public double get_food(Animal a, double dt) {
 		
 		int n=0;
+		double ret;
 		for(Animal b: getAnimals()) {
 			if(b.get_diet()== Diet.HERBIVORE) {
 				n++;
@@ -29,12 +30,13 @@ public class DynamicSupplyRegion extends Region implements FoodSupplier{
 		
 		
 		if(a.get_diet() == Diet.CARNIVORE)
-			return 0.0;
+			ret = 0.0;
 		else
 		{
-			return Math.min(_food,60.0*Math.exp(-Math.max(0,n-5.0)*2.0)*dt);
-			
+			ret = Math.min(_food,60.0*Math.exp(-Math.max(0,n-5.0)*2.0)*dt);
+			_food -= ret;
 		}
+		return ret;
 	}
 
 	@Override

@@ -2,9 +2,7 @@ package simulator.factories;
 
 import org.json.JSONObject;
 
-import simulator.model.DefaultRegion;
 import simulator.model.DynamicSupplyRegion;
-import simulator.model.FoodSupplier;
 import simulator.model.Region;
 
 public class DynamicSupplyRegionBuilder extends Builder<Region>{
@@ -15,10 +13,6 @@ public class DynamicSupplyRegionBuilder extends Builder<Region>{
 	public DynamicSupplyRegionBuilder()
 	{
 		super("dynamic", "a");
-	}
-	
-	public DynamicSupplyRegionBuilder(String type_tag, String desc) {
-		super(type_tag, desc);
 	}
 
 	@Override

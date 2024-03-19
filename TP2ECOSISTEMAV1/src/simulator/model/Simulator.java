@@ -1,8 +1,6 @@
 package simulator.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -86,7 +84,6 @@ public class Simulator implements JSONable{
 		
 		it = l.listIterator();
 		
-		//siempre que haya un siguiente animal
 		while(it.hasNext())
 		{
 			Animal a = it.next();
@@ -98,11 +95,25 @@ public class Simulator implements JSONable{
 				it.remove();
 				_regmanager.unregister_animal(a);
 			}
+		}
+		
+		it = l.listIterator();
+		
+		//siempre que haya un siguiente animal
+		while(it.hasNext())
+		{
+			Animal a = it.next();
 			
 			a.update(dt); //actualizar cada animal
-			_regmanager.update_animal_region(a); //actualizar la regi�n del animal
-				
+			_regmanager.update_animal_region(a); //actualizar la region del animal
 			_regmanager.update_all_regions(dt);
+		}
+		
+		it = l.listIterator();
+		
+		while(it.hasNext())
+		{
+			Animal a = it.next();
 			
 			if(a.is_pregnent())
 			{
@@ -111,7 +122,6 @@ public class Simulator implements JSONable{
 				it.add(_baby);
 				_regmanager.register_animal(_baby);
 			}
-				
 		}
 	}
 	

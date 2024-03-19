@@ -8,20 +8,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import simulator.factories.Builder;
-import simulator.factories.BuilderBasedFactory;
-import simulator.factories.DefaultRegionBuilder;
-import simulator.factories.DynamicSupplyRegionBuilder;
-import simulator.factories.Factory;
-import simulator.factories.SelectClosestBuilder;
-import simulator.factories.SelectFirstBuilder;
-import simulator.factories.SheepBuilder;
-import simulator.factories.WolfBuilder;
-import simulator.model.Animal;
 import simulator.model.Animalnfo;
-import simulator.model.Entity;
-import simulator.model.Region;
-import simulator.model.SelectionStrategy;
 import simulator.model.Simulator;
 import simulator.view.SimpleObjectViewer;
 import simulator.view.SimpleObjectViewer.ObjInfo;
@@ -30,14 +17,9 @@ public class Controller {
 	
 	protected Simulator _sim;
 	
-	private static Factory<Animal> _animal_factory;
-	private static Factory<Region> _region_factory;
-	
-	public Controller(Simulator sim, Factory<Animal> animal_factory, Factory<Region> region_factory) //ver si se puede pasar por parametro las factorias
+	public Controller(Simulator sim)
 	{
 		_sim = sim;
-		_animal_factory = animal_factory;
-		_region_factory = region_factory;
 	}
 	
 	private static List<ObjInfo> to_animals_info(List<? extends Animalnfo> animals) {
@@ -121,7 +103,7 @@ public class Controller {
 		final_state.put("out", _sim.as_JSON());
 		
 		p.println("{");
-		p.println(init_state);
+		p.println(init_state + ", ");
 		p.println(final_state);
 		p.println("}");
 

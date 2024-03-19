@@ -11,13 +11,18 @@ public class SelectClosest implements SelectionStrategy{
 		
 		if(as.isEmpty())
 			return null;
-		
-		for(Animal b: as)
+		else
 		{
-			if(a.get_position().distanceTo(b.get_position()) < _minima_distancia)
-				_animal_cercano = b;
+			for(Animal b: as)
+			{
+				if(a.get_position().distanceTo(b.get_position()) < _minima_distancia)
+				{
+					_animal_cercano = b;
+					_minima_distancia = a.get_position().distanceTo(b.get_position());
+				}
+			}
+			return _animal_cercano;
 		}
-		return _animal_cercano;
 	}
 
 }

@@ -2,7 +2,6 @@ package simulator.model;
 
 
 
-import java.util.Random;
 import java.util.function.Predicate;
 
 import simulator.misc.Utils;
@@ -50,14 +49,7 @@ public class Wolf extends Animal{
 			//mantener al WOLF en la zona deseada
 			if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
 			{
-				double x = this.get_position().getX();
-				double y = this.get_position().getY();
-			
-				while (x >= width) x = (x - width);
-				while (x < 0) x = (x + width);
-				while (y >= height) y = (y - height);
-				while (y < 0) y = (y + height);
-				this._pos = new Vector2D(x, y);
+				ajustar_pos(width, height);
 			
 				this._state = State.NORMAL;
 			}
@@ -73,93 +65,57 @@ public class Wolf extends Animal{
 			}
 		}
 	}
-
+	
 	private void actualizar(double dt)
 	{
-		//MODO NORMAL
-		if(this.get_state() == State.NORMAL)
-		{	
-			//avanzar
-			if(_dest.distanceTo(_pos) < 8.0)
-			{
-				double x = Utils._rand.nextDouble(800);
-				double y = Utils._rand.nextDouble(600);
-				this._dest = new Vector2D(x, y); //elije un nuevo destino
-			}
-					
-			move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
-							
-			this._age += dt; // aï¿½ade dt a la edad
-			
-			_energy = Math.max(0.0, Math.min(_energy - 18.0*dt, 100.0));//energy -18.0*dt (0-100)
-							
-			_desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
-			
-			//cambio de estado
-			if(this.get_energy() < 50.0)
-			{
-				this._state = State.HUNGER;
-				this._mate_target = null;
-			}
-			else if(this.get_energy() >= 50.0 && this._desire > 65.0)
-			{
-				this._state = State.MATE;
-				this._hunt_target = null;
-			}
-		}
-		
-		
-		//MODO HUNGER
-		else if(this.get_state() == State.HUNGER)
+		switch(this.get_state())
 		{
-			if(_hunt_target == null || (_hunt_target != null && _hunt_target.get_state() == State.DEAD) 
-					|| (_hunt_target != null && this.get_position().minus(_hunt_target.get_position()).magnitude() > this.get_sight_range()))
-			{
-				//buscar animal que se considere peligroso
-				Predicate<Animal> _cazar = (a)-> a.get_diet()== Diet.HERBIVORE;
-				
-				_region_mngr.get_animals_in_range(this, _cazar);
-				
-				//mantenemos una referencia del animal peligroso
-				_hunt_target = _hunting_strategy.select(_hunt_target, _region_mngr.get_animals_in_range(this, _cazar));
-			}
-			if(_hunt_target == null)
-			{
+			case NORMAL:
 				//avanzar
-				if(_dest.minus(_pos).magnitude() < 8.0)
+				avanzapaso1(dt);
+				
+				//cambio de estado
+				if(this.get_energy() < 50.0)
 				{
-					double x = Utils._rand.nextDouble(width);
-					double y = Utils._rand.nextDouble(height);
-					this._dest = new Vector2D(x, y); //elije un nuevo destino
+					this._state = State.HUNGER;
+					this._mate_target = null;
 				}
-						
-				move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
-								
-				this._age += dt; // aï¿½ade dt a la edad
-								
-				this._energy = Math.max(0.0, Math.min(_energy - 18.0*dt, 100.0));//energy - 18.0*dt (0-100)
-								
-				this._desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
-			}
-			else if(_hunt_target != null)
-			{
-				this._dest = _hunt_target.get_position();
-				
-				move(3.0*_speed*dt*Math.exp((_energy-100.0)*0.007));
-				
-				this._age += dt;
-				
-				this._energy = Math.max(0.0, Math.min(_energy - 18.0*1.2*dt, 100.0));//energy - 18.0*dt (0-100)
-				
-				this._desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
-				
-				if(_hunt_target.get_position().minus(_pos).magnitude() < 8.0)
+				else if(this.get_energy() >= 50.0 && this._desire > 65.0)
 				{
-					_hunt_target._state = State.DEAD;
-					_hunt_target = null;
-					_energy = Math.max(0.0, Math.min(_energy + 50.0, 100.0));//energy - 18*1.2*dt (0-100)
+					this._state = State.MATE;
+					this._hunt_target = null;
 				}
-			}
+				break;
+				
+			case HUNGER:
+				if(_hunt_target == null || (_hunt_target != null && _hunt_target.get_state() == State.DEAD) 
+				|| (_hunt_target != null && this.get_position().distanceTo(_hunt_target.get_position()) > this.get_sight_range()))
+				{
+					//buscar animal que se considere peligroso
+					Predicate<Animal> _cazar = (a)-> a.get_diet()== Diet.HERBIVORE;
+			
+					_region_mngr.get_animals_in_range(this, _cazar);
+			
+					//mantenemos una referencia del animal peligroso
+					_hunt_target = _hunting_strategy.select(this, _region_mngr.get_animals_in_range(this, _cazar));
+				}
+				if(_hunt_target == null)
+				{
+					avanzapaso1(dt);
+				}
+				else
+				{
+					this._dest = _hunt_target.get_position();
+			
+					avanzapaso2(dt);
+				
+					if(_hunt_target.get_position().distanceTo(this.get_position()) < 8.0)
+					{
+						_hunt_target._state = State.DEAD;
+						_hunt_target = null;
+						_energy = Math.max(0.0, Math.min(_energy + 50.0, 100.0));//energy + 50.0 (0-100)
+					}
+				}
 			//cambio de estado
 			if(this.get_energy() > 50.0)
 			{
@@ -176,100 +132,107 @@ public class Wolf extends Animal{
 				}		
 			}
 			
-		}
-		
-		
-		//MODO MATE
-		else if(this._state == State.MATE)
-		{
-			if(_mate_target != null)
-			{
-				if(_mate_target._state == State.DEAD || _mate_target.get_position().minus(_pos).magnitude() > this.get_sight_range())
-				{
-					_mate_target = null;
-				}
-			}
-			else if(_mate_target == null)
-			{
-				//buscar animal que se considere peligroso
-				Predicate<Animal> MateAnimals = (a)-> a.get_genetic_code() == this._genetic_code;
-				
-				_region_mngr.get_animals_in_range(this, MateAnimals);
-				
-				//mantenemos una referencia del animal mate
-				_mate_target =_mate_strategy.select(this, _region_mngr.get_animals_in_range(this, MateAnimals)); 
-				
-				if(_mate_target != null)
-				{
-					this._dest = _mate_target.get_position();
+					break;
 					
-					move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
+				case MATE:
 					
-					this._age += dt;
-					
-					_energy = Math.max(0.0, Math.min(_energy - 18.0*1.2*dt, 100.0));//energy - 18*1.2*dt (0-100)
-					
-					_desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
-					
-					if(_mate_target.get_position().distanceTo(this._pos) < 8.0)
+					if(_mate_target != null && _mate_target._state == State.DEAD || _mate_target != null && _mate_target.get_position().minus(_pos).magnitude() > this.get_sight_range())
 					{
-						this._desire = 0.0;
-						_mate_target._desire = 0.0;
+						_mate_target = null;
+					}
+					if(_mate_target == null)
+					{
+						//buscar animal que se considere peligroso
+						Predicate<Animal> MateAnimals = (a)-> a.get_genetic_code() == this._genetic_code;
 						
-						if(!is_pregnent())
+						_region_mngr.get_animals_in_range(this, MateAnimals);
+						
+						//mantenemos una referencia del animal mate
+						_mate_target =_mate_strategy.select(this, _region_mngr.get_animals_in_range(this, MateAnimals)); 
+					}
+					if(_mate_target == null)
+					{
+						avanzapaso1(dt);
+					}
+					else
+					{
+						this._dest = _mate_target.get_position();
+						
+						avanzapaso2(dt);
+						
+						if(_mate_target.get_position().distanceTo(this._pos) < 8.0)
 						{
-							Random random = new Random();
-							double probabilidad = random.nextDouble();
-							if(probabilidad < 0.9)
+							this._desire = 0.0;
+							_mate_target._desire = 0.0;
+								
+							if(!is_pregnent())
 							{
-								_baby = new Wolf(this, _mate_target);
+								if(Utils._rand.nextDouble() < 0.9)
+								{
+									_baby = new Wolf(this, _mate_target);
+								}
+									
+								_energy = Math.max(0.0, Math.min(_energy - 10.0, 100.0));//energy - 10 (0-100)
+									
+								_mate_target = null;
 							}
-							
-							_energy = Math.max(0.0, Math.min(_energy - 10.0, 100.0));//energy - 10 (0-100)
-							
-							_mate_target = null;
 						}
 					}
 					
-				}
-				else
-				{
-					//avanzar
-					if(_dest.distanceTo(_pos) < 8.0)
+					//cambio de estado
+					if(this.get_energy() < 50.0)
 					{
-						double x = Utils._rand.nextDouble(800);
-						double y = Utils._rand.nextDouble(600);
-						this._dest = new Vector2D(x, y); //elije un nuevo destino
+						this._state = State.HUNGER;
+						this._mate_target = null;
 					}
-							
-					move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
-									
-					this._age += dt; // aï¿½ade dt a la edad
-									
-					this._energy = Math.max(0.0, Math.min(_energy - 18.0*dt, 100.0));//energy - 18*dt (0-100)
-									
-					this._desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
-				}
-				
-				
+					else
+					{
+						if(this._desire < 65.0)
+						{
+							this._state = State.NORMAL;
+							_hunt_target = null;
+							_mate_target = null;
+						}
+					}
+					break;
+					
+					
+				default:
+					break;
 			}
-			
-			//cambio de estado
-			if(this.get_energy() < 50.0)
-			{
-				this._state = State.HUNGER;
-				this._mate_target = null;
-			}
-			else
-			{
-				if(this._desire < 65.0)
-				{
-					this._state = State.NORMAL;
-					_hunt_target = null;
-					_mate_target = null;
-				}
-			}
+		
+		
+		
+	}
+	
+	private void avanzapaso1(double dt)
+	{
+		//avanzar
+		if(_dest.distanceTo(_pos) < 8.0)
+		{
+			this._dest = elegir_pos_rand();
 		}
+				
+		move(this._speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
+						
+		this._age += dt; // añade dt a la edad
+		
+		_energy = Math.max(0.0, Math.min(_energy - 18.0*dt, 100.0));//energy -18.0*dt (0-100)
+						
+		_desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
+	}
+	
+	private void avanzapaso2(double dt)
+	{
+		move(3.0*_speed*dt*Math.exp((_energy-100.0)*0.007));//avanza
+		
+		this._age += dt;
+			
+		_energy = Math.max(0.0, Math.min(_energy - 18.0*1.2*dt, 100.0));//energy - 18*1.2*dt (0-100)
+			
+		_desire = Math.max(0.0, Math.min(_desire + 30.0*dt, 100.0));//desire + 30.0*dt (0-100)
 	}
 }
+
+
 

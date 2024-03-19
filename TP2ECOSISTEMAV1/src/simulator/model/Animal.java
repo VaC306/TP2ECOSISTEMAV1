@@ -84,32 +84,40 @@ public abstract class Animal implements Animalnfo, Entity{
 		double width = _region_mngr.get_width();
 		double height = _region_mngr.get_height();
 		
-		
 		if(this._pos == null)
 		{
-			double x = Utils._rand.nextDouble(_region_mngr.get_width());
-			double y = Utils._rand.nextDouble(_region_mngr.get_height());
-			this._pos = new Vector2D(x, y);
-			
+			this._pos = elegir_pos_rand();
 		}
 		else
 		{
-			//ajustar la posicion si esta fuera del mapa
-			double x = _pos.getX();
-			double y = _pos.getY();
-			
-			while (x >= width) x = (x - width);
-			while (x < 0) x = (x + width);
-			while (y >= height) y = (y - height);
-			while (y < 0) y = (y + height);
-			
-			this._pos = new Vector2D(x,y);
+			ajustar_pos(width, height);
 		}
 		
 		//posicion dentro del mapa de destino
 		double a = Utils._rand.nextDouble(800);
 		double b = Utils._rand.nextDouble(600);
 		_dest = new Vector2D(a, b);
+	}
+	
+	protected Vector2D elegir_pos_rand()
+	{
+		double x = Utils._rand.nextDouble(_region_mngr.get_width());
+		double y = Utils._rand.nextDouble(_region_mngr.get_height());
+		return new Vector2D(x, y);
+	}
+	
+	protected void ajustar_pos(double width, double height)
+	{
+		//ajustar la posicion si esta fuera del mapa
+		double x = _pos.getX();
+		double y = _pos.getY();
+		
+		while (x >= width) x = (x - width);
+		while (x < 0) x = (x + width);
+		while (y >= height) y = (y - height);
+		while (y < 0) y = (y + height);
+		
+		this._pos = new Vector2D(x,y);
 	}
 	
 	protected Animal deliver_baby()
@@ -166,7 +174,7 @@ public abstract class Animal implements Animalnfo, Entity{
 		return _age;
 	}
 	
-	public SelectionStrategy getMate_strategy() {
+	protected SelectionStrategy getMate_strategy() {
 		return _mate_strategy;
 	}
 	

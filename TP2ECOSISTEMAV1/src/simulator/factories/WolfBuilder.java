@@ -7,7 +7,6 @@ import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 import simulator.model.Animal;
 import simulator.model.SelectionStrategy;
-import simulator.model.Sheep;
 import simulator.model.Wolf;
 
 public class WolfBuilder extends Builder<Animal>{
@@ -19,32 +18,39 @@ public class WolfBuilder extends Builder<Animal>{
 		super("wolf","a"); //ver que poner en data
 		_selection_strategy_factory = selection_strategy_factory;
 	}
-	
-	public WolfBuilder(String type_tag, String desc) {
-		super(type_tag, desc);
-	}
 
 	@Override
 	protected Animal create_instance(JSONObject data) {
-		
-		JSONObject _first_select = new JSONObject();
-		_first_select.put("type", "first");
 		
 		//valid data
 		if(data == null)
 			throw new IllegalArgumentException();
 			
 		SelectionStrategy _mate_strategy = null;
-		SelectionStrategy _danger_strategy = null;
+		SelectionStrategy _hunt_strategy = null;
 		
-		if(!data.has("mate_strategy"))
+		if(data.has("mate_strategy"))
 		{
-			_mate_strategy = _selection_strategy_factory.create_instance(_first_select); //ver como selectfirst
+			JSONObject _selection = data.getJSONObject("mate_strategy");
+			_mate_strategy = _selection_strategy_factory.create_instance(_selection); //ver como selectfirst
+		}
+		else
+		{
+			JSONObject _selection = new JSONObject();
+			_selection.put("type", "first");
+			_mate_strategy = _selection_strategy_factory.create_instance(_selection);
 		}
 		
-		if(!data.has("danger_strategy"))
+		if(data.has("hunt_strategy"))
 		{
-			_danger_strategy = _selection_strategy_factory.create_instance(_first_select); //ver como selectfirst
+			JSONObject _selection = data.getJSONObject("hunt_strategy");
+			_hunt_strategy = _selection_strategy_factory.create_instance(_selection); //ver como selectfirst
+		}
+		else
+		{
+			JSONObject _selection = new JSONObject();
+			_selection.put("type", "first");
+			_hunt_strategy = _selection_strategy_factory.create_instance(_selection);
 		}
 		
 		Vector2D _pos = new Vector2D();
@@ -57,8 +63,10 @@ public class WolfBuilder extends Builder<Animal>{
 		else
 		{
 			
-			JSONArray _x_range = data.getJSONArray("x_range");
-			JSONArray _y_range = data.getJSONArray("y_range");
+			JSONObject pos = data.getJSONObject("pos");
+			
+			JSONArray _x_range = pos.getJSONArray("x_range");
+			JSONArray _y_range = pos.getJSONArray("y_range");
 			
 			//se comrpueba q sean 2d
 			if(_x_range.length()!=2 || _y_range.length()!=2 ) {
@@ -66,8 +74,12 @@ public class WolfBuilder extends Builder<Animal>{
 				throw new IllegalArgumentException();
 			}
 			
-			double x = Utils._rand.nextDouble(_x_range.getDouble(1));
-			double y = Utils._rand.nextDouble(_y_range.getDouble(1));
+			double x1 = _x_range.getDouble(0);
+			double x2 = _x_range.getDouble(1);
+			double x = x1 + (x2 - x1) * Utils._rand.nextDouble();
+			double y1 = _y_range.getDouble(0);
+			double y2 = _y_range.getDouble(1);
+			double y = y1 + (y2 - y1) * Utils._rand.nextDouble();
 			
 			_pos = new Vector2D(x,y);
 			
@@ -75,7 +87,7 @@ public class WolfBuilder extends Builder<Animal>{
 			assert(_pos.getY() >= _y_range.getDouble(0) && _pos.getY() <= _y_range.getDouble(1));
 		}
 		
-		return new Wolf(_mate_strategy, _danger_strategy, _pos);
+		return new Wolf(_mate_strategy, _hunt_strategy, _pos);
 	}
 
 }

@@ -26,6 +26,7 @@ import simulator.factories.DynamicSupplyRegionBuilder;
 import simulator.factories.Factory;
 import simulator.factories.SelectClosestBuilder;
 import simulator.factories.SelectFirstBuilder;
+import simulator.factories.SelectYoungestBuilder;
 import simulator.factories.SheepBuilder;
 import simulator.factories.WolfBuilder;
 import simulator.misc.Utils;
@@ -157,6 +158,9 @@ public class Main {
 	
 	private static void parse_out_file_option(CommandLine line) throws ParseException {
 		_outFile = line.getOptionValue("o", null);
+		if (_mode == ExecMode.BATCH && _outFile == null) {
+			throw new ParseException("In batch mode an output configuration file is required");
+		}
 	}
 
 	private static void parse_time_option(CommandLine line) throws ParseException {
@@ -189,6 +193,7 @@ public class Main {
 		List<Builder<SelectionStrategy>> selection_strategy_builders = new ArrayList<>();
 		selection_strategy_builders.add(new SelectFirstBuilder());
 		selection_strategy_builders.add(new SelectClosestBuilder());
+		selection_strategy_builders.add(new SelectYoungestBuilder());
 		Factory<SelectionStrategy> selection_strategy_factory = new BuilderBasedFactory<SelectionStrategy>(selection_strategy_builders);
 		
 		//inicializar la factoria de animales
@@ -218,9 +223,6 @@ public class Main {
 		if(_outFile!=null) {
 			out = new FileOutputStream (_outFile);
 		}
-		else {
-			out=System.out;
-		}
 		
 		int _cols = jsonInput.getInt("cols");
 		int _rows = jsonInput.getInt("rows");
@@ -228,7 +230,7 @@ public class Main {
 		int _height = jsonInput.getInt("height");
 		
 		Simulator _sim = new Simulator(_cols, _rows, _width, _height, _animal_factory, _region_factory);
-		Controller _ctrl = new Controller(_sim, _animal_factory, _region_factory);
+		Controller _ctrl = new Controller(_sim);
 		
 		_ctrl.load_data(jsonInput);
 		_ctrl.run(_time, _dtime, _sv, out);

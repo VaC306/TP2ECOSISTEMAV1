@@ -2,7 +2,6 @@ package simulator.factories;
 
 import org.json.JSONObject;
 
-import simulator.model.Animal;
 import simulator.model.SelectYoungest;
 import simulator.model.SelectionStrategy;
 
@@ -12,13 +11,9 @@ public class SelectYoungestBuilder extends Builder<SelectionStrategy>{
 	{
 		super("youngest", "a");
 	}
-	
-	public SelectYoungestBuilder(String type_tag, String desc) {
-		super(type_tag, desc);
-	}
 
 	@Override
-	protected SelectionStrategy create_instance(JSONObject data) {
+	protected SelectionStrategy create_instance(JSONObject data) throws IllegalArgumentException{
 		return new SelectYoungest();
 	}
 

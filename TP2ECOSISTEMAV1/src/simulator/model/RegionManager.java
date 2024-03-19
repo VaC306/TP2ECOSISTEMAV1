@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,7 +46,7 @@ public class RegionManager implements AnimalMapView{
 	void set_region(int row, int col, Region r)
 	{
 		//actualizar lista de animales de la region
-		r.l = this._regions[row][col].l;
+		r.l = this._regions[row][col].getAnimals();
 		this._regions[row][col] = r;
 		for(Animal a : r.l)
 		{
@@ -57,7 +56,7 @@ public class RegionManager implements AnimalMapView{
 	
 	void update_animal_region(Animal a)
 	{
-		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		Region _region = region_animal(a);
 		Region _old_region = _animal_region.get(a);
 		
 		if((_old_region != null) && !_old_region.equals(_region))
@@ -73,16 +72,15 @@ public class RegionManager implements AnimalMapView{
 	{
 		a.init(this);
 		
-		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		Region _region = region_animal(a);
 		
 		_region.add_animal(a);
 		_animal_region.put(a, _region);
-		update_animal_region(a);
 	}
 	
 	void unregister_animal(Animal a)
 	{
-		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		Region _region = region_animal(a);
 		_region.remove_animal(a);
 		_animal_region.remove(a, _region);
 		update_animal_region(a);
@@ -99,22 +97,49 @@ public class RegionManager implements AnimalMapView{
 		}
 	}
 	
-	public List<Animal> get_animals_in_range(Animal a, Predicate<Animal> filter)
+	private Region region_animal(Animal a)
 	{
-		List<Animal> _animals_in_range = new LinkedList<>();
-		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
-
-		// Aplicar el filtro utilizando el Predicate
-		for(Animal b: _region.getAnimals())
-		{
-			if (filter.test(b) && b.get_position().distanceTo(a.get_position()) <= a.get_sight_range()) {
-                _animals_in_range.add(b);
-            }
-		}
-
-		// A�adir los animales filtrados a la lista resultante
-		return _animals_in_range;	
+		return _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
 	}
+	
+	public List<Animal> get_animals_in_range(Animal a, Predicate<Animal> filter) {
+	    List<Animal> animalsInRange = new LinkedList<>();
+
+	    // Obtener las coordenadas del animal a
+	    double animalX = a.get_position().getX();
+	    double animalY = a.get_position().getY();
+	    double sightRange = a.get_sight_range();
+
+	    // Calcular las coordenadas del campo visual
+	    double minX = Math.max(0, animalX - sightRange);
+	    double maxX = Math.min(_width - 1, animalX + sightRange);
+	    double minY = Math.max(0, animalY - sightRange);
+	    double maxY = Math.min(_height - 1, animalY + sightRange);
+
+	    // Iterar sobre las regiones en el campo visual
+	    int minRow = (int) (minY / _region_height);
+	    int maxRow = (int) (maxY / _region_height);
+	    int minCol = (int) (minX / _region_width);
+	    int maxCol = (int) (maxX / _region_width);
+
+	    for (int i = minRow; i <= maxRow; i++) {
+	        for (int j = minCol; j <= maxCol; j++) {
+	            Region region = _regions[i][j];
+	            List<Animal> animalsInRegion = region.getAnimals();
+
+	            // Filtrar animales dentro del campo visual y que cumplan con el filtro
+	            for (Animal animal : animalsInRegion) {
+	                double distance = animal.get_position().distanceTo(a.get_position());
+	                if (distance <= sightRange && filter.test(animal)) {
+	                    animalsInRange.add(animal);
+	                }
+	            }
+	        }
+	    }
+
+	    return animalsInRange;
+	}
+
 
 	@Override
 	public int get_cols() {
@@ -148,7 +173,7 @@ public class RegionManager implements AnimalMapView{
 
 	@Override
 	public double get_food(Animal a, double dt) {
-		Region _region = _regions[(int) (a.get_position().getY() / _region_height)][(int)(a.get_position().getX() / _region_width)];
+		Region _region = region_animal(a);
 		return _region.get_food(a, dt);
 	}
 	

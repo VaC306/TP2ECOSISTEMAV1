@@ -1,6 +1,5 @@
 package simulator.model;
 
-import java.util.Random;
 import java.util.function.Predicate;
 
 import simulator.misc.Utils;
@@ -44,15 +43,9 @@ public class Sheep extends Animal{
 			//mantener al SHEEP en la zona deseada
 			if(this.get_position().getX() > width || this.get_position().getY() > height || this.get_position().getX() < 0 || this.get_position().getY() < 0)
 			{
-				double x = this.get_position().getX();
-				double y = this.get_position().getY();
-			
-				while (x >= width) x = (x - width);
-				while (x < 0) x = (x + width);
-				while (y >= height) y = (y - height);
-				while (y < 0) y = (y + height);
-				this._pos = new Vector2D(x, y);
-			
+				
+				ajustar_pos(width, height);
+				
 				this._state = State.NORMAL;
 			}
 			//si su energia es 0 o age >8 cambia a DEAD
@@ -71,161 +64,161 @@ public class Sheep extends Animal{
 	
 	private void actualizar(double dt)
 	{
-		//MODO NORMAL
-		if(this._state == State.NORMAL) {
-			
-			avanzapaso1(dt);
-			//buscar un nuevo animal si danger es null
-			if(this._danger_source == null) 
-			{
-				//buscar animal que se considere peligroso
-				Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
-				
-				_region_mngr.get_animals_in_range(this, DangersAnimals);
-				
-				//mantenemos una referencia del animal peligroso
-				_danger_source =_danger_strategy_.select(_danger_source, _region_mngr.get_animals_in_range(this, DangersAnimals));
-				
-				
-				//si tras buscar sigue siendo null
-				if(_danger_source != null){
-					this._state = State.DANGER;
-					_mate_target = null;
-				}	
-			}
-			if(this._desire > 65.0 && _danger_source == null) 
-			{
-				this._state = State.MATE;
-				_danger_source = null;
-			}
-		}
-		
-		
-		//MODO DANGER
-		else if(this._state == State.DANGER) {
-			//si el animal peligroso ya ha muerto por alguna otra razon
-			if(this._danger_source != null && this._state ==State.DEAD) {
-				this._danger_source =null;
-			}
-			if(this._danger_source==null) {
+		switch(this.get_state())
+		{
+			case NORMAL:
 				avanzapaso1(dt);
-			}
-			
-			if(this._danger_source != null) {
-				this._dest =_pos.plus(_pos.minus(_danger_source.get_position()).direction());
-				
-				avanzandopaso2(dt);
-			}
-			
-			//cambio de estado
-			
-			if(this._danger_source==null || _danger_source.get_position().distanceTo(this.get_position())>this.get_sight_range()) {
-				//buscar animal que se considere peligroso
-				Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
-				
-				_region_mngr.get_animals_in_range(this, DangersAnimals);
-				
-				//mantenemos una referencia del animal peligroso
-				_danger_source =_danger_strategy_.select(this, _region_mngr.get_animals_in_range(this, DangersAnimals));
-				
-				if(this._danger_source==null)
+				//buscar un nuevo animal si danger es null
+				if(this._danger_source == null) 
 				{
-					if(this._desire < 65.0) 
-					{
-						this._state = State.NORMAL;
-						_danger_source = null;
-						_mate_target = null;
-					}else
-					{
-						this._state = State.MATE;
-						_danger_source = null;
-					}
-				}
-				
-			}
-			
-		}
-		
-		//MODO MATE
-		else if(this._state == State.MATE) {
-			if(this._mate_target != null && this._state ==State.DEAD || (this._mate_target != null &&_mate_target.get_position().distanceTo(this.get_position())>this.get_sight_range())) {
-				this._mate_target =null;
-			}
-			
-			
-			
-			if(this._mate_target==null) {
-				//buscar animal para emparejarse
-				Predicate<Animal> MateAnimals = (a)-> a.get_genetic_code() == _genetic_code;
-				
-				_region_mngr.get_animals_in_range(this, MateAnimals);
-				
-				//mantenemos una referencia del animal mate
-				_mate_target =_mate_strategy.select(this, _region_mngr.get_animals_in_range(this, MateAnimals));
-				}
-			
-			//si sigue siendo null avanzo comopaso1
-			if(_mate_target==null) {
-			avanzapaso1(dt);
-			}
-			else
-			{
-				this._dest = _mate_target.get_position();
-							
-				avanzandopaso2(dt);
-				//si la distancia es menos q 8, se empareja y tienen un bebe
-				if(_pos.distanceTo(_mate_target.get_position()) < 8.0) {
-					this._desire=0.0;
-					_mate_target._desire=0.0;
-						
-					if(!is_pregnent())
-					{
-						Random random = new Random();
-						double probabilidad = random.nextDouble();
-						if(probabilidad < 0.9)
-						{
-							_baby = new Sheep(this, _mate_target);
-						}
-						_mate_target = null;
-					}
-				}
-			
-				
-					
-				//buscar nuevo animal como peligroso
-				if(_danger_source == null) {
 					//buscar animal que se considere peligroso
 					Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
-						
+					
 					_region_mngr.get_animals_in_range(this, DangersAnimals);
-						
+					
 					//mantenemos una referencia del animal peligroso
 					_danger_source =_danger_strategy_.select(this, _region_mngr.get_animals_in_range(this, DangersAnimals));
-						
-				}
 					
-				if(_danger_source != null) {
+					
+					//si tras buscar sigue siendo null
+					if(_danger_source != null){
 						this._state = State.DANGER;
 						_mate_target = null;
+					}	
 				}
+				if(this._desire > 65.0 && _danger_source == null) 
+				{
+					this._state = State.MATE;
+					_danger_source = null;
+				}
+				break;
+				
+			case DANGER:
+				//si el animal peligroso ya ha muerto por alguna otra razon
+				if(this._danger_source != null && this._state ==State.DEAD) {
+					this._danger_source =null;
+				}
+				if(this._danger_source==null) {
+					avanzapaso1(dt);
+				}
+				
+				if(this._danger_source != null) {
+					this._dest =_pos.plus(_pos.minus(_danger_source.get_position()).direction());
 					
-				if(_danger_source == null && this._desire < 65.0) {
-						this._state = State.NORMAL;
-						_danger_source = null;
-						_mate_target = null;
+					avanzandopaso2(dt);
 				}
-			}
-		}
+				
+				//cambio de estado
+				
+				if(this._danger_source==null || _danger_source.get_position().distanceTo(this.get_position())>this.get_sight_range()) {
+					//buscar animal que se considere peligroso
+					Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
+					
+					_region_mngr.get_animals_in_range(this, DangersAnimals);
+					
+					//mantenemos una referencia del animal peligroso
+					_danger_source =_danger_strategy_.select(this, _region_mngr.get_animals_in_range(this, DangersAnimals));
+					
+					if(this._danger_source==null)
+					{
+						if(this._desire < 65.0) 
+						{
+							this._state = State.NORMAL;
+							_danger_source = null;
+							_mate_target = null;
+						}else
+						{
+							this._state = State.MATE;
+							_danger_source = null;
+						}
+					}
+					
+				}
 			
+					break;
+					
+				case MATE:
+					if(this._mate_target != null && this._state ==State.DEAD || (this._mate_target != null &&_mate_target.get_position().distanceTo(this.get_position())>this.get_sight_range())) {
+						this._mate_target =null;
+					}
+					
+					
+					
+					if(this._mate_target==null) {
+						//buscar animal para emparejarse
+						Predicate<Animal> MateAnimals = (a)-> a.get_genetic_code() == _genetic_code;
+						
+						_region_mngr.get_animals_in_range(this, MateAnimals);
+						
+						//mantenemos una referencia del animal mate
+						_mate_target =_mate_strategy.select(this, _region_mngr.get_animals_in_range(this, MateAnimals));
+						}
+					
+					//si sigue siendo null avanzo comopaso1
+					if(_mate_target==null) {
+					avanzapaso1(dt);
+					}
+					else
+					{
+						this._dest = _mate_target.get_position();
+									
+						avanzandopaso2(dt);
+						//si la distancia es menos q 8, se empareja y tienen un bebe
+						if(_pos.distanceTo(_mate_target.get_position()) < 8.0) {
+							this._desire=0.0;
+							_mate_target._desire=0.0;
+								
+							if(!is_pregnent())
+							{
+								if(Utils._rand.nextDouble() < 0.9)
+								{
+									_baby = new Sheep(this, _mate_target);
+								}
+								_mate_target = null;
+							}
+						}
+					
+						
+							
+						//buscar nuevo animal como peligroso
+						if(_danger_source == null) {
+							//buscar animal que se considere peligroso
+							Predicate<Animal> DangersAnimals = (a)-> a.get_diet()== Diet.CARNIVORE;
+								
+							_region_mngr.get_animals_in_range(this, DangersAnimals);
+								
+							//mantenemos una referencia del animal peligroso
+							_danger_source =_danger_strategy_.select(this, _region_mngr.get_animals_in_range(this, DangersAnimals));
+								
+						}
+							
+						if(_danger_source != null) {
+								this._state = State.DANGER;
+								_mate_target = null;
+						}
+							
+						if(_danger_source == null && this._desire < 65.0) {
+								this._state = State.NORMAL;
+								_danger_source = null;
+								_mate_target = null;
+						}
+					}
+					break;
+					
+					
+				default:
+					break;
+			}
+		
+		
+		
 	}
 	
 	private void avanzapaso1(double dt) {
 		//elije un nuevo destino
 		if(_pos.distanceTo(_dest) < 8.0)
 		{
-			double x = Utils._rand.nextDouble(800);
-			double y = Utils._rand.nextDouble(600);
-			this._dest = new Vector2D(x, y); 
+			this._dest = elegir_pos_rand();
 		}
 		
 		//avanza
