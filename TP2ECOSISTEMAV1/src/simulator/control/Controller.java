@@ -8,7 +8,7 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import simulator.model.Animalnfo;
+import simulator.model.AnimalInfo;
 import simulator.model.Simulator;
 import simulator.view.SimpleObjectViewer;
 import simulator.view.SimpleObjectViewer.ObjInfo;
@@ -22,9 +22,9 @@ public class Controller {
 		_sim = sim;
 	}
 	
-	private static List<ObjInfo> to_animals_info(List<? extends Animalnfo> animals) {
+	private static List<ObjInfo> to_animals_info(List<? extends AnimalInfo> animals) {
 		List<ObjInfo> ol = new ArrayList<>(animals.size());
-		for (Animalnfo a : animals)
+		for (AnimalInfo a : animals)
 		ol.add(new ObjInfo(a.get_genetic_code(),
 		(int) a.get_position().getX(),
 		(int) a.get_position().getY(),(int)Math.round(a.get_age())+2));

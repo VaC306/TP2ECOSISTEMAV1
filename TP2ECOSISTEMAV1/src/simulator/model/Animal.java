@@ -6,7 +6,7 @@ import org.json.JSONObject;
 import simulator.misc.Utils;
 import simulator.misc.Vector2D;
 
-public abstract class Animal implements Animalnfo, Entity{
+public abstract class Animal implements AnimalInfo, Entity{
 	
 	protected String  _genetic_code;
 	protected Diet _diet;

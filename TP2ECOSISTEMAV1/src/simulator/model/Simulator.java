@@ -72,7 +72,7 @@ public class Simulator implements JSONable{
 		return _regmanager;
 	}
 	
-	public List<? extends Animalnfo> get_animals()
+	public List<? extends AnimalInfo> get_animals()
 	{
 		return Collections.unmodifiableList(l);
 	}
